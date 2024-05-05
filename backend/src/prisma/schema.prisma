@@ -1,0 +1,89 @@
+datasource db {
+    provider = "mysql"
+    url      = "mysql://root:KimChaehyun@localhost:3306/admissionscommitteeprojectdb"
+}
+
+generator client {
+    provider             = "prisma-client-py"
+    interface            = "asyncio"
+    recursive_type_depth = 5
+}
+
+model Applicant {
+    id                    Int   @id @default(autoincrement())
+    fullName              String
+    graduatedInstitutions Json
+    medal                 Boolean
+    enrolled              Boolean
+    study_group           Study_group
+    examination_sheet     Examination_sheet
+    department            Department
+    faculty               Faculty
+}
+
+model Study_group {
+    id                    Int   @id @default(autoincrement())
+    title                 String   @unique
+    applicant             Applicant   @relation(fields: [applicantId], references: [id])
+    applicantId           Int   @unique
+    exams                 Exam[]
+}
+
+model Examination_sheet {
+    id                    Int   @id @default(autoincrement())
+    applicant             Applicant   @relation(fields: [applicantId], references: [id])
+    applicantId           Int   @unique
+    study_subjects        Examination_sheet_study_subject[]
+}
+
+model Department {
+    id                    Int   @id @default(autoincrement())
+    applicant             Applicant   @relation(fields: [applicantId], references: [id])
+    applicantId           Int   @unique
+    faculty               Faculty @relation(fields: [facultyId], references: [id])
+    facultyId             Int
+    specialty             Specialty   @relation(fields: [specialtyId], references: [id])
+    specialtyId           Int   @unique
+}
+
+model Faculty {
+    id                    Int   @id @default(autoincrement())
+    applicant             Applicant   @relation(fields: [applicantId], references: [id])
+    applicantId           Int   @unique
+    specialty             Specialty   @relation(fields: [specialtyId], references: [id])
+    specialtyId           Int   @unique
+    departments           Department[]
+}
+
+model Exam {
+    id                    Int   @id @default(autoincrement())
+    isConsultation        Boolean   @default(false)
+    conductingDate        DateTime
+    classroom             String
+    createDate            DateTime   @default(now())
+    study_group           Study_group?   @relation(fields: [study_groupId], references: [id])
+    study_groupId         Int?
+}
+
+model Study_subject {
+    id                    Int   @id @default(autoincrement())
+    title                 String
+    score                 Int   @default(0)
+    examination_sheets    Examination_sheet_study_subject[]
+}
+
+model Examination_sheet_study_subject {
+    id                    Int   @id @default(autoincrement())
+    examination_sheet     Examination_sheet   @relation(fields: [examination_sheetId], references: [id])
+    examination_sheetId   Int
+    study_subject         Study_subject   @relation(fields: [study_subjectId], references: [id])
+    study_subjectId       Int
+}
+
+model Specialty {
+    id                    Int   @id @default(autoincrement())
+    passingScore          Int
+    competition           Int
+    faculty               Faculty
+    department            Department
+}
