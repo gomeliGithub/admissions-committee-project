@@ -13,5 +13,5 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 export class AppComponent {
     title = 'frontend';
 
-    public isMenuCollapsed = true;//
+    public isMenuCollapsed = true;
 }
