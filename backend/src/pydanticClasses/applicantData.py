@@ -4,7 +4,7 @@ from pydantic import (
     field_validator
 )
 
-from backend.src.models.applicant import Applicant
+from prisma.models import Applicant
 
 
 class Applicant_get_request_pydantic (BaseModel):
@@ -42,6 +42,7 @@ class Applicant_create_request_pydantic (BaseModel):
 
 
 class Applicant_update_request_pydantic (BaseModel):
+    id: int = Field(ge = 1)
     fullName: str | None = Field(default = None, min_length = 10)
     graduatedInstitutions: list[str] | None
     medal: bool | None = Field(default = None, min_length = 5)

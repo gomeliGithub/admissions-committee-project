@@ -1,16 +1,16 @@
-from fastapi import Depends
+from typing import List
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
 
 from fastapi_controllers import (
     Controller,
     get
 )
 
-from backend.src.database_connection import get_async_database_session
-
-from backend.src.models.exam import Exam
-from backend.src.models.specialty import Specialty
+from prisma.models import (
+    Exam,
+    Specialty
+)
 
 from backend.src.pydanticClasses.examData import (
     Department_get_request_pydantic,
@@ -23,30 +23,28 @@ from backend.src.services.exam_service import ExamService
 
 
 class ExamController (Controller):
-    __databaseSession: AsyncSession
     __examService: ExamService
 
 
-    def __init__ (self, databaseSession: AsyncSession = Depends(get_async_database_session), examService: ExamService = Depends(ExamService)) -> None:
-        self.__databaseSession = databaseSession
+    def __init__ (self, examService: ExamService = Depends(ExamService)) -> None:
         self.__examService = examService
 
 
-    @get('/getExamData', response_class = list[Exam])
+    @get('/getExamData', response_class = List[Exam])
     async def getExamData (self, examData: Exam_get_request_pydantic):
-        return await self.__examService.getExamData(self.__databaseSession, examData)
+        return await self.__examService.getExamData(examData)
     
 
-    @get('/getDepartmentData', response_class = list[str])
+    @get('/getDepartmentData', response_class = List[str])
     async def getDepartmentData (self, examData: Department_get_request_pydantic):
-        return await self.__examService.getDepartmentData(self.__databaseSession, examData)
+        return await self.__examService.getDepartmentData(examData)
 
 
-    @get('/getSpecialtyData', response_class = list[Specialty])
+    @get('/getSpecialtyData', response_class = List[Specialty])
     async def getSpecialtyData (self, specialtyData: Specialty_get_request_pydantic):
-        return await self.__examService.getSpecialtyData(self.__databaseSession, specialtyData)
+        return await self.__examService.getSpecialtyData(specialtyData)
     
 
     @get('/createExam', response_class = None)
     async def createExam (self, examData: Exam_create_request_pydantic) -> None:
-        return await self.__examService.createExam(self.__databaseSession, examData)
+        return await self.__examService.createExam(examData)

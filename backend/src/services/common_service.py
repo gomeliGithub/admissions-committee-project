@@ -1,15 +1,14 @@
-from typing import Tuple
-from sqlalchemy import (
-    Select,
-    func,
-    select
+from typing import (
+    Dict, 
+    List,
+    cast
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.applicant import Applicant
-from backend.src.models.examination_sheet import Examination_sheet
-from backend.src.models.faculty import Faculty
-from backend.src.models.department import Department
+from src.prisma import prisma
+from prisma.models import (
+    Applicant,
+    Department
+)
 
 from backend.src.pydanticClasses.applicantData import Applicant_get_request_pydantic
 
@@ -22,28 +21,51 @@ class CommonService:
         pass
 
 
-    async def getAllData (self, databaseSession: AsyncSession, applicantService: ApplicantService, examService: ExamService, applicantData: Applicant_get_request_pydantic):
-        selectApplicantQuery: Select[Tuple[Applicant]] = select(Applicant).join(Examination_sheet.study_subjects).limit(applicantData.limitCount).offset(applicantData.offsetCount).group_by(Applicant.department)
-        selectFacultiesPassingScoreQuery: Select[Tuple[int]] = select(Faculty.passingScore)
-        selectDepartmentsPassingScoreQuery: Select[Tuple[int]] = select(Department.passingScore)
-        enrolledApplicantDepartmentQuery: Select[Tuple[int]] = select(func.count().label('enrolledApplicants')).select_from(Applicant).where(Applicant.enrolled == True).group_by(Applicant.department)
+    async def getAllData (self, applicantService: ApplicantService, examService: ExamService, applicantData: Applicant_get_request_pydantic) -> Dict[ str, Dict[str, List[Applicant] | bool] | List[int] | list[Dict[str, str | int]] | int ]:
+        applicantDataList: Dict[ str, List[ Applicant ] | bool ] = cast(Dict[ str, List[ Applicant ] | bool ], await applicantService.getApplicantData(applicantData))
+        facultiesPassingScore: List[int] = [ passingScore for passingScore in map(lambda faculty: faculty.passingScore, await prisma.faculty.find_many(where = { 'passingScore': True })) ]
+        departmentsPassingScore: List[int] = [ passingScore for passingScore in map(lambda department: department.passingScore, await prisma.department.find_many(where = { 'passingScore': True })) ]
 
-        enrolledApplicantDepartmentQueryResult = ( await databaseSession.execute(enrolledApplicantDepartmentQuery) ).all()
+        universityPassingScore: int = 0
+        commonCount: int = 0
+        index: int = 0
 
-        applicantDataList = ( await databaseSession.execute(selectApplicantQuery) ).all()
+        while index < len(facultiesPassingScore) - 1:
+            currentCount: str | int | None = facultiesPassingScore[index]
 
-        facultiesPassingScore = ( await databaseSession.execute(selectFacultiesPassingScoreQuery) ).all()
-        departmentsPassingScore = ( await databaseSession.execute(selectDepartmentsPassingScoreQuery) ).all()
-        universityPassingScore: int = len(facultiesPassingScore) + len(departmentsPassingScore)
+            commonCount += currentCount
 
-        enrolledApplicantDepartmentCount = enrolledApplicantDepartmentQueryResult
-        enrolledApplicantUniversityCount = len(enrolledApplicantDepartmentQueryResult)
+            index =+ 1
+        else:
+            universityPassingScore = commonCount // len(facultiesPassingScore)
+
+        enrolledApplicantDepartmentsCount: List[ Dict[ str, str | int ] ] = [ ]
+        departmentsData: List[Department] = await prisma.department.find_many()
+
+        for department in departmentsData:
+            applicantCount: int = await prisma.applicant.count(where = { 'enrolled': True, 'departmentId': department.id })
+
+            enrolledApplicantDepartmentsCount.append({ 'title': department.title, 'count': applicantCount })
+
+        enrolledApplicantUniversityCount: int = 0
+        commonCount: int = 0
+        index = 0
+
+        while index < len(enrolledApplicantDepartmentsCount) - 1:
+            currentObj: Dict[str, str | int] = enrolledApplicantDepartmentsCount[index]
+            currentCount: str | int | None = currentObj.get('count')
+
+            if currentCount != None: commonCount += int(currentCount)
+
+            index =+ 1
+        else:
+            enrolledApplicantUniversityCount = commonCount
 
         return {
-            applicantDataList: applicantDataList,
-            facultiesPassingScore: facultiesPassingScore,
-            departmentsPassingScore: departmentsPassingScore,
-            universityPassingScore: universityPassingScore,
-            enrolledApplicantDepartmentCount: enrolledApplicantDepartmentCount,
-            enrolledApplicantUniversityCount: enrolledApplicantUniversityCount
+            'applicantDataList': applicantDataList,
+            'facultiesPassingScore': facultiesPassingScore,
+            'departmentsPassingScore': departmentsPassingScore,
+            'universityPassingScore': universityPassingScore,
+            'enrolledApplicantDepartmentsCount': enrolledApplicantDepartmentsCount,
+            'enrolledApplicantUniversityCount': enrolledApplicantUniversityCount
         }

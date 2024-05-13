@@ -10,80 +10,86 @@ generator client {
 }
 
 model Applicant {
-    id                    Int   @id @default(autoincrement())
+    id                    Int                               @id @default(autoincrement())
     fullName              String
     graduatedInstitutions Json
-    medal                 Boolean
-    enrolled              Boolean
-    study_group           Study_group
-    examination_sheet     Examination_sheet
-    department            Department
-    faculty               Faculty
+    medal                 Boolean?                          @default(false)
+    enrolled              Boolean?                          @default(false)
+    study_group           Study_group?
+    examination_sheet     Examination_sheet?
+    department            Department                        @relation(fields: [departmentId], references: [id])
+    departmentId          Int
+    faculty               Faculty                           @relation(fields: [facultyId], references: [id])
+    facultyId             Int
 }
 
 model Study_group {
-    id                    Int   @id @default(autoincrement())
-    title                 String   @unique
-    applicant             Applicant   @relation(fields: [applicantId], references: [id])
-    applicantId           Int   @unique
+    id                    Int                               @id @default(autoincrement())
+    title                 String                            @unique
+    applicant             Applicant                         @relation(fields: [applicantId], references: [id])
+    applicantId           Int                               @unique
     exams                 Exam[]
 }
 
 model Examination_sheet {
-    id                    Int   @id @default(autoincrement())
-    applicant             Applicant   @relation(fields: [applicantId], references: [id])
-    applicantId           Int   @unique
+    id                    Int                               @id @default(autoincrement())
+    applicant             Applicant                         @relation(fields: [applicantId], references: [id])
+    applicantId           Int                               @unique
     study_subjects        Examination_sheet_study_subject[]
 }
 
 model Department {
-    id                    Int   @id @default(autoincrement())
-    applicant             Applicant   @relation(fields: [applicantId], references: [id])
-    applicantId           Int   @unique
-    faculty               Faculty @relation(fields: [facultyId], references: [id])
+    id                    Int                               @id @default(autoincrement())
+    title                 String
+    placesNumber          Int
+    passingScore          Int
+    studentsAreShortage   Boolean?                          @default(false)
+    applicants            Applicant[]                    
+    faculty               Faculty                           @relation(fields: [facultyId], references: [id])
     facultyId             Int
-    specialty             Specialty   @relation(fields: [specialtyId], references: [id])
-    specialtyId           Int   @unique
+    specialty             Specialty                         @relation(fields: [specialtyId], references: [id])
+    specialtyId           Int                               @unique
 }
 
 model Faculty {
-    id                    Int   @id @default(autoincrement())
-    applicant             Applicant   @relation(fields: [applicantId], references: [id])
-    applicantId           Int   @unique
-    specialty             Specialty   @relation(fields: [specialtyId], references: [id])
-    specialtyId           Int   @unique
-    departments           Department[]
+    id                    Int                               @id @default(autoincrement())
+    title                 String
+    passingScore          Int
+    applicants            Applicant[]   
+    departments           Department[]                    
+    specialty             Specialty                         @relation(fields: [specialtyId], references: [id])
+    specialtyId           Int                               @unique
 }
 
 model Exam {
-    id                    Int   @id @default(autoincrement())
-    isConsultation        Boolean   @default(false)
+    id                    Int                               @id @default(autoincrement())
+    isConsultation        Boolean?                          @default(false)
     conductingDate        DateTime
     classroom             String
-    createDate            DateTime   @default(now())
-    study_group           Study_group?   @relation(fields: [study_groupId], references: [id])
+    createDate            DateTime                          @default(now())
+    study_group           Study_group?                      @relation(fields: [study_groupId], references: [id])
     study_groupId         Int?
 }
 
 model Study_subject {
-    id                    Int   @id @default(autoincrement())
+    id                    Int                               @id @default(autoincrement())
     title                 String
-    score                 Int   @default(0)
+    score                 Int                               @default(0)
     examination_sheets    Examination_sheet_study_subject[]
 }
 
 model Examination_sheet_study_subject {
-    id                    Int   @id @default(autoincrement())
-    examination_sheet     Examination_sheet   @relation(fields: [examination_sheetId], references: [id])
+    id                    Int                               @id @default(autoincrement())
+    examination_sheet     Examination_sheet                 @relation(fields: [examination_sheetId], references: [id])
     examination_sheetId   Int
-    study_subject         Study_subject   @relation(fields: [study_subjectId], references: [id])
+    study_subject         Study_subject                     @relation(fields: [study_subjectId], references: [id])
     study_subjectId       Int
 }
 
 model Specialty {
-    id                    Int   @id @default(autoincrement())
+    id                    Int                               @id @default(autoincrement())
     passingScore          Int
     competition           Int
-    faculty               Faculty
-    department            Department
+    faculty               Faculty?
+    department            Department?
 }
