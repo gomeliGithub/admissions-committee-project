@@ -7,19 +7,21 @@ from fastapi_controllers import (
     get
 )
 
+from ..auth.auth_bearer import JWTBearer
+
 from prisma.models import (
     Exam,
     Specialty
 )
 
-from backend.src.pydanticClasses.examData import (
+from ..pydanticClasses.examData import (
     Department_get_request_pydantic,
     Exam_create_request_pydantic, 
     Exam_get_request_pydantic,
     Specialty_get_request_pydantic
 )
 
-from backend.src.services.exam_service import ExamService
+from ..services.exam_service import ExamService
 
 
 class ExamController (Controller):
@@ -30,21 +32,21 @@ class ExamController (Controller):
         self.__examService = examService
 
 
-    @get('/getExamData', response_class = List[Exam])
+    @get('/getExamData', dependencies = [Depends(JWTBearer())], response_class = List[Exam])
     async def getExamData (self, examData: Exam_get_request_pydantic):
         return await self.__examService.getExamData(examData)
     
 
-    @get('/getDepartmentData', response_class = List[str])
+    @get('/getDepartmentData', dependencies = [Depends(JWTBearer())], response_class = List[str])
     async def getDepartmentData (self, examData: Department_get_request_pydantic):
         return await self.__examService.getDepartmentData(examData)
 
 
-    @get('/getSpecialtyData', response_class = List[Specialty])
+    @get('/getSpecialtyData', dependencies = [Depends(JWTBearer())], response_class = List[Specialty])
     async def getSpecialtyData (self, specialtyData: Specialty_get_request_pydantic):
         return await self.__examService.getSpecialtyData(specialtyData)
     
 
-    @get('/createExam', response_class = None)
+    @get('/createExam', dependencies = [Depends(JWTBearer())], response_class = None)
     async def createExam (self, examData: Exam_create_request_pydantic) -> None:
         return await self.__examService.createExam(examData)

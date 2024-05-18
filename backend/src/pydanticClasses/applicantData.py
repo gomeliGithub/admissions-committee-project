@@ -1,3 +1,4 @@
+from fastapi import Query
 from pydantic import (
     BaseModel, 
     Field,
@@ -8,14 +9,14 @@ from prisma.models import Applicant
 
 
 class Applicant_get_request_pydantic (BaseModel):
-    ids: list[int] | None
-    graduatedInstitutions: list[str] | None
-    enrolled: bool | None = Field(default = None)
-    departmentId: int | None = Field(default = None, gt = 0)
-    facultyId: int | None = Field(default = None, gt = 0)
-    studyGroupId: int | None = Field(default = None, ge = 3)
-    limitCount: int = Field(default = 4, gt = 4)
-    offsetCount: int = Field(default = 0, gt = 0)
+    ids: list[int] | None = Query()
+    graduatedInstitutions: list[str] | None = Query()
+    enrolled: bool | None = Query(default = None)
+    departmentId: int | None = Query(default = None, gt = 0)
+    facultyId: int | None = Query(default = None, gt = 0)
+    studyGroupId: int | None = Query(default = None, ge = 3)
+    limitCount: int = Query(default = 4, gt = 4)
+    offsetCount: int = Query(default = 0, gt = 0)
 
 
     @field_validator('ids')

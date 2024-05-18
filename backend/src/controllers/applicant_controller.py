@@ -7,14 +7,16 @@ from fastapi_controllers import (
     put
 )
 
-from backend.src.pydanticClasses.applicantData import ( 
+from ..auth.auth_bearer import JWTBearer
+
+from ..pydanticClasses.applicantData import ( 
     Applicant_create_request_pydantic,
     Applicant_get_request_pydantic, 
     Applicant_get_response_pydantic,
     Applicant_update_request_pydantic 
 )
 
-from backend.src.services.applicant_service import ApplicantService
+from ..services.applicant_service import ApplicantService
 
 
 class ApplicantController (Controller):
@@ -25,16 +27,16 @@ class ApplicantController (Controller):
         self.__applicantService = applicantService
     
 
-    @get('/getApplicantData', response_class = Applicant_get_response_pydantic)
+    @get('/getApplicantData', dependencies = [Depends(JWTBearer())], response_class = Applicant_get_response_pydantic)
     async def getApplicantData (self, applicantData: Applicant_get_request_pydantic):
         return await self.__applicantService.getApplicantData(applicantData)
     
 
-    @post('/createApplicant', response_class = None)
+    @post('/createApplicant', dependencies = [Depends(JWTBearer())], response_class = None)
     async def createApplicant (self, applicantData: Applicant_create_request_pydantic) -> None:
         return await self.__applicantService.createApplicant(applicantData)
     
 
-    @put('/updateApplicant', response_class = None)
+    @put('/updateApplicant', dependencies = [Depends(JWTBearer())], response_class = None)
     async def updateApplicant (self, applicantData: Applicant_update_request_pydantic) -> None:
         return await self.__applicantService.updateApplicant(applicantData)

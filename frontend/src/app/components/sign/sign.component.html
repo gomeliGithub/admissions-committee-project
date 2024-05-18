@@ -1,0 +1,25 @@
+<form [formGroup]="signInForm" novalidate (ngSubmit)="signInFormSubmit()">
+    <div *ngIf="signInForm.controls['clientLogin']" class="row mb-3">
+        <label for="inputLogin" class="col-sm-2 col-form-label">Логин</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputLogin" formControlName="clientLogin">
+        </div>
+        <div *ngIf="signInForm.controls['clientLogin'].invalid && signInForm.controls['clientLogin'].touched" class="alert">
+            Неккоректный логин
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="inputPassword" class="col-sm-2 col-form-label">Пароль</label>
+        <div class="col-sm-10">
+            <input type="password" class="form-control" id="inputPassword" formControlName="clientPassword">
+        </div>
+        <div *ngIf="signInForm.controls['clientPassword'].invalid && signInForm.controls['clientPassword'].touched" class="alert">
+            Неккоректный пароль
+        </div>
+    </div>
+    <div class="mb-3">
+        <button [disabled]="signInForm.invalid" class="btn btn-primary">
+            Войти
+        </button>
+    </div>
+</form>

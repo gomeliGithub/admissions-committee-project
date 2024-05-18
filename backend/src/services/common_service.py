@@ -4,21 +4,48 @@ from typing import (
     cast
 )
 
+from datetime import datetime
+
 from src.prisma import prisma
 from prisma.models import (
     Applicant,
     Department
 )
 
-from backend.src.pydanticClasses.applicantData import Applicant_get_request_pydantic
+from python_ms import ms
 
-from backend.src.services.applicant_service import ApplicantService
-from backend.src.services.exam_service import ExamService
+from ..config.config import settings
+
+from ..pydanticClasses.applicantData import Applicant_get_request_pydantic
+
+from ..services.applicant_service import ApplicantService
+from ..services.exam_service import ExamService
 
 
 class CommonService:
     def __init__ (self):
         pass
+
+
+    cookieParameters = {
+        'max_age': cast(int, ms.parse_time(settings['COOKIE_MAXAGE_TIME'])),
+        'expires': None,
+        'path': '/',
+        'domain': None,
+        'secure': False,
+        'httponly': False,
+        'samesite': 'strict'
+    }
+
+
+    async def checkAccessMain (self, jwt: str, secure_fgp: str) -> bool:
+        if secure_fgp == '': return False
+
+        # jwtPayload: Dict[ str, str | int | datetime | None ] = await mainService.getActiveClient(jwt, secure_fgp)
+
+        # if jwtPayload == { }: return False
+
+        return True
 
 
     async def getAllData (self, applicantService: ApplicantService, examService: ExamService, applicantData: Applicant_get_request_pydantic) -> Dict[ str, Dict[str, List[Applicant] | bool] | List[int] | list[Dict[str, str | int]] | int ]:

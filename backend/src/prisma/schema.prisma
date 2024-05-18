@@ -1,6 +1,6 @@
 datasource db {
     provider = "mysql"
-    url      = "mysql://root:KimChaehyun@localhost:3306/admissionscommitteeprojectdb"
+    url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -13,8 +13,8 @@ model Applicant {
     id                    Int                               @id @default(autoincrement())
     fullName              String
     graduatedInstitutions Json
-    medal                 Boolean?                          @default(false)
-    enrolled              Boolean?                          @default(false)
+    medal                 Boolean                           @default(false)
+    enrolled              Boolean                           @default(false)
     study_group           Study_group?
     examination_sheet     Examination_sheet?
     department            Department                        @relation(fields: [departmentId], references: [id])
@@ -43,7 +43,7 @@ model Department {
     title                 String
     placesNumber          Int
     passingScore          Int
-    studentsAreShortage   Boolean?                          @default(false)
+    studentsAreShortage   Boolean                           @default(false)
     applicants            Applicant[]                    
     faculty               Faculty                           @relation(fields: [facultyId], references: [id])
     facultyId             Int
@@ -92,4 +92,19 @@ model Specialty {
     competition           Int
     faculty               Faculty?
     department            Department?
+}
+
+model Admissions_committee_secretary {
+    id                    Int                               @id @default(autoincrement())
+    login                 String                            @unique
+    password              String
+    lastSignInDate        DateTime?
+}
+
+model JWT_token {
+    jwt_hash              String                            @id
+    issued_date           DateTime                          @default(now())
+    expires_date          DateTime
+    revokation_date       DateTime
+    revoked               Boolean                           @default(false)
 }

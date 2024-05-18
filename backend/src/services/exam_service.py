@@ -13,7 +13,7 @@ from prisma.types import (
 )
 from src.prisma import prisma
 
-from backend.src.pydanticClasses.examData import (
+from ..pydanticClasses.examData import (
     Department_get_request_pydantic,
     Exam_create_request_pydantic, 
     Exam_get_request_pydantic,

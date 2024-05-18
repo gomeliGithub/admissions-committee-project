@@ -1,4 +1,8 @@
-from typing import Dict, List
+from typing import (
+    Dict, 
+    List,
+    cast
+)
 
 from prisma import Json
 from prisma.models import Applicant
@@ -8,7 +12,7 @@ from prisma.types import (
 )
 from src.prisma import prisma
 
-from backend.src.pydanticClasses.applicantData import (
+from ..pydanticClasses.applicantData import (
     Applicant_create_request_pydantic, 
     Applicant_get_request_pydantic, 
     Applicant_update_request_pydantic
@@ -70,8 +74,8 @@ class ApplicantService:
         await prisma.applicant.create(data = {
             'fullName': applicantData.fullName,
             'graduatedInstitutions': Json(applicantData.graduatedInstitutions),
-            'medal': applicantData.medal,
-            'enrolled': applicantData.enrolled,
+            'medal': cast(bool, applicantData.medal),
+            'enrolled': cast(bool, applicantData.enrolled),
             'department': { 'connect': { 'id': applicantData.departmentId } },
             'faculty': { 'connect': { 'id': applicantData.facultyId } },
             'study_group': { 'connect': { 'id': applicantData.studyGroupId } }
