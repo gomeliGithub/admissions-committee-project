@@ -2,12 +2,16 @@ from typing import List, Tuple
 
 from prisma.models import (
     Exam,
+    Faculty,
     Department,
+    Study_group,
     Specialty
 )
 from prisma.types import (
     ExamWhereInput,
+    FacultyWhereInput,
     DepartmentWhereInput,
+    Study_groupWhereInput,
     SpecialtyWhereInput,
     ExamCreateInput
 )
@@ -37,7 +41,15 @@ class ExamService:
         return examDataList
     
 
-    async def getDepartmentData (self, examData: Department_get_request_pydantic):
+    async def getFacultyData (self) -> List[Faculty]:
+        whereParams: FacultyWhereInput = { }
+
+        facultyDataList: List[Faculty] = await prisma.faculty.find_many(where = whereParams)
+
+        return facultyDataList
+
+
+    async def getDepartmentData (self, examData: Department_get_request_pydantic) -> List[Department]:
         whereParams: DepartmentWhereInput = { }
 
         if examData.studentsAreShortage != None: whereParams['studentsAreShortage'] = examData.studentsAreShortage
@@ -45,6 +57,14 @@ class ExamService:
         departmentDataList: List[Department] = await prisma.department.find_many(where = whereParams)
 
         return departmentDataList
+    
+
+    async def getStudyGroupData (self) -> List[Study_group]:
+        whereParams: Study_groupWhereInput = { }
+
+        studyGroupList: List[Study_group] = await prisma.study_group.find_many(where = whereParams)
+
+        return studyGroupList
     
 
     async def getSpecialtyData (self, specialtyData: Specialty_get_request_pydantic):

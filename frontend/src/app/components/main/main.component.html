@@ -1,10 +1,74 @@
-<div class="">
-    <div ngbDropdown display="dynamic" placement="bottom-end">
-        <button type="button" class="btn btn-outline-primary" id="dropdownConfig" ngbDropdownToggle>Выбрать абитуриента</button>
-        <div ngbDropdownMenu aria-labelledby="dropdownConfig">
-            <button *ngFor="let applicantData of applicantList" ngbDropdownItem>
-                {{ applicantData.fullName }}
+<div *ngIf="applicantList.length !== 0" class="">
+    <form [formGroup]="applicantSearchForm" novalidate (ngSubmit)="applicantSearchFormSubmit()">
+        <div class="row mb-3">
+            <label for="inputFaculty" class="col-sm-2 col-form-label">Факультет</label>
+            <div class="col-sm-10">
+                <select class="form-select" id="inputFaculty" formControlName="faculty">
+                    <option *ngFor="let facultyData of facultyList; let isFirst = first" [selected]="isFirst">
+                        {{ facultyData.title }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="inputDepartment" class="col-sm-2 col-form-label">Кафедра</label>
+            <div class="col-sm-10">
+                <select class="form-select" id="inputDepartment" formControlName="department">
+                    <option *ngFor="let departmentData of departmentList; let isFirst = first" [selected]="isFirst">
+                        {{ departmentData.title }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="inputStudyGroup" class="col-sm-2 col-form-label">Группа</label>
+            <div class="col-sm-10">
+                <select class="form-select" id="inputStudyGroup" formControlName="studyGroup">
+                    <option *ngFor="let studyGroupData of studyGroupList; let isFirst = first" [selected]="isFirst">
+                        {{ studyGroupData.title }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3">
+            <button [disabled]="applicantSearchForm.invalid" class="btn btn-info">
+                Найти
             </button>
         </div>
-    </div>
+    </form>
+</div>
+<div class="">
+    <ng-template [ngIf]="applicantList.length !== 0" [ngIfElse]="applicantListEmptyBlock">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Оконченные учебные заведения</th>
+                    <th scope="col">Медалист</th>
+                    <th scope="col">Зачислен</th>
+                    <th scope="col">Факультет</th>
+                    <th scope="col">Кафедра</th>
+                    <th scope="col">Группа</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let applicantData of applicantList; let i = index">
+                    <th scope="row">{{ i + 1 }}</th>
+                    <td>{{ applicantData.fullName }}</td>
+                    <td>{{ applicantData.graduatedInstitutions }}</td>
+                    <td>{{ applicantData.medal }}</td>
+                    <td>{{ applicantData.enrolled }}</td>
+                    <td>{{ applicantData.faculty }}</td>
+                    <td>{{ applicantData.department }}</td>
+                    <td>{{ applicantData.studyGroup }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-template>
+    <ng-template #applicantListEmptyBlock>
+        <div class="fs-3 fw-semibold text-center">
+            <span>Абитуриенты отсутствуют</span>
+        </div>
+    </ng-template>
 </div>

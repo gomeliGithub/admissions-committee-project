@@ -34,7 +34,8 @@ class JWTBearer (HTTPBearer):
         requestURLPath: str = request.url.path
         __secure_fgp: str | None =  request.cookies.get('__secure_fgp')
 
-        if requestURLPath != '/api/sign/in' and __secure_fgp == None: raise HTTPException(status_code = 401, detail = "Cookie __secure_fgp does not exists.")
+        if ( requestURLPath != '/api/sign/in' and requestURLPath != '/api/sign/getActiveClient' ) and __secure_fgp == None: 
+            raise HTTPException(status_code = 401, detail = "Cookie __secure_fgp does not exists.")
 
         if credentials:
             if not credentials.scheme == "Bearer":

@@ -11,6 +11,9 @@ from ..auth.auth_bearer import JWTBearer
 
 from prisma.models import (
     Exam,
+    Faculty,
+    Department,
+    Study_group,
     Specialty
 )
 
@@ -37,9 +40,19 @@ class ExamController (Controller):
         return await self.__examService.getExamData(examData)
     
 
-    @get('/getDepartmentData', dependencies = [Depends(JWTBearer())], response_class = List[str])
-    async def getDepartmentData (self, examData: Department_get_request_pydantic):
+    @get('/getFacultyData', dependencies = [Depends(JWTBearer())])
+    async def getFacultyData (self) -> List[Faculty]:
+        return await self.__examService.getFacultyData()
+    
+
+    @get('/getDepartmentData', dependencies = [Depends(JWTBearer())])
+    async def getDepartmentData (self, examData: Department_get_request_pydantic = Depends()) -> List[Department]:
         return await self.__examService.getDepartmentData(examData)
+    
+
+    @get('/getStudyGroupData', dependencies = [Depends(JWTBearer())])
+    async def getStudyGroupData (self) -> List[Study_group]:
+        return await self.__examService.getStudyGroupData()
 
 
     @get('/getSpecialtyData', dependencies = [Depends(JWTBearer())], response_class = List[Specialty])

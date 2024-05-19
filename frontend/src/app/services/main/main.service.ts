@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
 import { IRequestApplicantData, IResponseApplicantData } from 'types/global';
+import { IDepartment, IFaculty, IStudyGroup } from 'types/models';
 
 @Injectable({
     providedIn: 'root'
@@ -32,6 +33,34 @@ export class MainService {
         if ( applicantData.facultyId ) params = params.append('facultyId', applicantData.facultyId)
         if ( applicantData.studyGroupId ) params = params.append('studyGroupId', applicantData.studyGroupId)
 
-        return this._http.get<IResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params });
+        return this._http.get<IResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params }).pipe(map(applicantData => {
+            applicantData.applicantList.forEach(item => {
+                if ( item.graduatedInstitutions ) {
+                    const parsedGraduatedInstitutions: string[] = JSON.parse(item.graduatedInstitutions);
+
+                    item.graduatedInstitutions = parsedGraduatedInstitutions.join(', ');
+                }
+            });
+
+
+
+            console.log(applicantData);
+
+
+
+            return applicantData;
+        }));
+    }
+
+    public getFacultyData (): Observable<IFaculty[]> {
+        return this._http.get<IFaculty[]>(`${ this._apiURL }/exam/getFacultyData`, { withCredentials: true });
+    }
+
+    public getDepartmentData (): Observable<IDepartment[]> {
+        return this._http.get<IDepartment[]>(`${ this._apiURL }/exam/getDepartmentData`, { withCredentials: true });
+    }
+
+    public getStudyGroupData (): Observable<IStudyGroup[]> {
+        return this._http.get<IStudyGroup[]>(`${ this._apiURL }/exam/getStudyGroupData`, { withCredentials: true });
     }
 }
