@@ -35,10 +35,8 @@ class CommonController (Controller):
         self.__commonService = commonService
     
 
-    @get('/checkAccess', dependencies = [Depends(JWTBearer(auto_error = False))])
-    async def checkAccessMain (self) -> bool: # jwt: Annotated[str, Depends(JWTBearer(auto_error = False))] # secure_fgp: str = Cookie()
-        # return await self.__commonService.checkAccessMain(jwt, secure_fgp, self.__mainService)
-        
+    @get('/checkAccess', dependencies = [Depends(JWTBearer())])
+    async def checkAccessMain (self) -> bool:
         return True
 
 

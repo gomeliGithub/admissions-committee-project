@@ -4,7 +4,10 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { AppService } from '../../app.service';
 import { SignService } from '../../services/sign/sign.service';
+
+import { IActiveClientData } from 'types/global';
 
 @Component({
     selector: 'app-sign',
@@ -14,14 +17,19 @@ import { SignService } from '../../services/sign/sign.service';
     styleUrl: './sign.component.css'
 })
 export class SignComponent {
-    signInForm: FormGroup<{
+    public activeClientData: IActiveClientData | null;
+
+    public signInForm: FormGroup<{
         clientLogin: FormControl<string | null>
         clientPassword: FormControl<string | null>
     }>;
 
     constructor (
+        private readonly _appService: AppService,
         private readonly _signService: SignService
     ) {
+        this._appService.setSignInAsCurrentPage(true);
+
         const formControls: {
             clientLogin: FormControl<string | null>
             clientPassword: FormControl<string | null>

@@ -7,7 +7,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppService } from '../../app.service';
 import { MainService } from '../../services/main/main.service';
 
-import { IActiveClientData } from 'types/global';
+import { IActiveClientData, IResponseApplicantData } from 'types/global';
 import { IApplicant } from 'types/models';
 
 @Component({
@@ -20,7 +20,7 @@ import { IApplicant } from 'types/models';
 export class MainComponent {
     public activeClientData: IActiveClientData | null;
     
-    public applicantList: Observable<IApplicant[]>;
+    public applicantList: IApplicant[] = [];
 
     constructor (
         private readonly _appService: AppService,
@@ -28,10 +28,16 @@ export class MainComponent {
     ) {
         this.activeClientData = this._appService.activeClientData;
 
-        this.applicantList = this.getApplicantList();
+        this.getApplicantList().subscribe({
+            next: data => !data.nextApplicantsIsExists ? this.applicantList = data.applicantList : this.applicantList.push(...data.applicantList),
+            error: () => this._appService.createAndAddErrorAlert()
+        });
     }
 
-    public getApplicantList (): Observable<IApplicant[]> {
-        return this._mainService.getApplicantList();
+    public getApplicantList (): Observable<IResponseApplicantData> {
+        return this._mainService.getApplicantList({
+            limitCount: 5,
+            offsetCount: this.applicantList.length
+        });
     }
 }

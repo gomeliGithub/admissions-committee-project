@@ -64,6 +64,7 @@ class ApplicantService:
             if commonApplicantCount and ( commonApplicantCount > applicantData.offsetCount + len(applicantDataList) and commonApplicantCount > applicantData.limitCount ):
                 nextApplicantsIsExists = True
 
+
             return { 
                 'applicantList': applicantDataList,
                 'nextApplicantsIsExists': nextApplicantsIsExists

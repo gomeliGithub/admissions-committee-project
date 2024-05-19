@@ -23,12 +23,15 @@ export class AppComponent implements OnInit {
 
     public alerts: IAlert[] = [];
 
+    public signInIsCurrentPage: boolean = false;
+
     constructor (
         private readonly _appService: AppService,
         private readonly _signService: SignService
     ) {
         this._appService.alertsAddChange.subscribe(value => this.addAlert(value));
         this._appService.alertsCloseChange.subscribe(value => this.closeAlert(value));
+        this._appService.signInIsCurrentPageChange.subscribe(value => this.signInIsCurrentPage = value);
     }
 
     ngOnInit (): void {

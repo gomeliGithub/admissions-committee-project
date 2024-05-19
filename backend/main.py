@@ -1,6 +1,10 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import (
+    Depends,
+    FastAPI, 
+    Request
+)
 from fastapi.middleware.cors import CORSMiddleware
 
 from contextlib import asynccontextmanager
@@ -14,6 +18,8 @@ from src.controllers.applicant_controller import ApplicantController
 from src.controllers.exam_controller import ExamController
 from src.controllers.sign_controller import SignController
 from src.controllers.common_controller import CommonController
+
+from src.services.sign_service import SignService
 
 from src.config.config import settings
 
@@ -38,7 +44,7 @@ app.add_middleware(
     allow_origins = settings['CORS_ORIGIN'],
     allow_credentials = True,
     allow_methods = [ 'GET', 'POST', 'PUT', 'OPTIONS' ],
-    allow_headers = [ 'Access-Control-Allow-Headers' , 'Content-Type', 'Authorization', 'Access-Control-Allow-Origin' ]
+    allow_headers = [ '*' ]
 )
 
 app.include_router(ApplicantController.create_router(), prefix = '/api/applicant')

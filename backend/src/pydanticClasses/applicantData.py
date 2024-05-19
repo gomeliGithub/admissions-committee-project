@@ -1,3 +1,6 @@
+from typing import cast
+import json
+
 from fastapi import Query
 from pydantic import (
     BaseModel, 
@@ -9,26 +12,34 @@ from prisma.models import Applicant
 
 
 class Applicant_get_request_pydantic (BaseModel):
-    ids: list[int] | None = Query()
-    graduatedInstitutions: list[str] | None = Query()
-    enrolled: bool | None = Query(default = None)
-    departmentId: int | None = Query(default = None, gt = 0)
-    facultyId: int | None = Query(default = None, gt = 0)
-    studyGroupId: int | None = Query(default = None, ge = 3)
-    limitCount: int = Query(default = 4, gt = 4)
-    offsetCount: int = Query(default = 0, gt = 0)
+    ids: list[int] | None = Field(Query(default = None))
+    graduatedInstitutions: list[str] | None = Field(Query(default = None))
+    enrolled: bool | None = Field(Query(default = None))
+    departmentId: int | None = Field(Query(default = None, gt = 0))
+    facultyId: int | None = Field(Query(default = None, gt = 0))
+    studyGroupId: int | None = Field(Query(default = None, ge = 3))
+    limitCount: int = Field(Query(default = 4, gt = 4))
+    offsetCount: int = Field(Query(default = 0, ge = 0))
 
 
     @field_validator('ids')
     @classmethod
-    def ensure_ids_length (cls, value: list[int | str]) -> list[int | str] | None:
-        return ensure_list_length(value, 1)
+    def ensure_ids_length (cls, value: str | None) -> list[int | str] | None:
+        decodedValue: list[int | str] | None = None
+
+        if value != None: decodedValue = json.loads(value)
+
+        return ensure_list_length(decodedValue, 1)
     
 
     @field_validator('graduatedInstitutions')
     @classmethod
-    def ensure_graduatedInstitutions_length (cls, value: list[int | str]) -> list[int | str] | None:
-        return ensure_list_length(value, 1)
+    def ensure_graduatedInstitutions_length (cls, value: str) -> list[int | str] | None:
+        decodedValue: list[int | str] | None = None
+
+        if value != None: decodedValue = json.loads(value)
+
+        return ensure_list_length(decodedValue, 1)
 
 
 
@@ -64,7 +75,9 @@ class Applicant_get_response_pydantic (BaseModel):
     nextApplicantsIsExists: bool
 
 
-def ensure_list_length (listValue: list[int | str], minLength: int) -> list[int | str] | None:
+def ensure_list_length (listValue: list[int | str] | None, minLength: int) -> list[int | str] | None:
+    if listValue == None: return listValue
+
     if len(listValue) < minLength: raise ValueError()
     elif listValue == None: return None
         

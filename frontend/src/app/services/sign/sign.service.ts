@@ -41,10 +41,14 @@ export class SignService {
     }
 
     public signOut (): Observable<void> {
-        return this._http.put<void>('/sign/out', { }, { withCredentials: true });
+        return this._http.put<void>(`${ this._apiURL }/sign/out`, { }, { withCredentials: true });
     }
 
     public getActiveClient (): Observable<IActiveClientData | null> {
-        return this._http.get<IActiveClientData | null>('/sign/getActiveClient', { withCredentials: true });
+        return this._http.get<IActiveClientData | null>(`${ this._apiURL }/sign/getActiveClient`, { withCredentials: true });
+    }
+
+    public checkAccessMain (): Observable<boolean> {
+        return this._http.get<boolean>(`${ this._apiURL }/main/checkAccess`, { withCredentials: true });
     }
 }

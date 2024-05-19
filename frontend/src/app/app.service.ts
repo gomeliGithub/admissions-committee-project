@@ -15,6 +15,8 @@ export class AppService {
     public alertsAddChange: EventEmitter<IAlert> = new EventEmitter();
     public alertsCloseChange: EventEmitter<IAlert> = new EventEmitter();
 
+    public signInIsCurrentPageChange: EventEmitter<boolean> = new EventEmitter();
+
     public activeClientData: IActiveClientData | null;
 
     public createAndAddSuccessAlert (message: string, closeTimeout: number = 3000): void {
@@ -35,6 +37,10 @@ export class AppService {
 
     public closeAlert (value: IAlert): void {
         this.alertsCloseChange.emit(value);
+    }
+
+    public setSignInAsCurrentPage (value: boolean): void {
+        this.signInIsCurrentPageChange.emit(value);
     }
 
     public async reloadComponent (self: boolean, urlToNavigateTo?: string, reloadPage = true): Promise<void> {

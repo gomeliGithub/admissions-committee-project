@@ -8,3 +8,19 @@ export interface IAlert {
 	message: string;
 	closeTimeout: number;
 }
+
+export interface IRequestApplicantData {
+	ids?: number[];
+    graduatedInstitutions?: string[];
+    enrolled?: boolean;
+    departmentId?: number;
+    facultyId?: number;
+    studyGroupId?: number;
+    limitCount: number;
+    offsetCount: number;
+}
+
+export interface IResponseApplicantData {
+    applicantList: IApplicant[];
+    nextApplicantsIsExists: boolean;
+}

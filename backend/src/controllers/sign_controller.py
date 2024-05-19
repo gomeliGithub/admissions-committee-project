@@ -1,3 +1,4 @@
+from re import I
 from typing import (
     Annotated, 
     Dict
@@ -5,12 +6,11 @@ from typing import (
 from datetime import datetime
 
 from fastapi import (
-    Cookie,
     Depends, 
-    HTTPException, 
+    HTTPException,
     Response
 )
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.security import HTTPBearer
 
 from fastapi_controllers import (
@@ -44,12 +44,12 @@ class SignController (Controller):
     
 
     @post('/in', response_class = PlainTextResponse)
-    async def signIn (self, signData: SignIn_request_pydantic, response: Response) -> str:
+    async def signIn (self, jwt: Annotated[str | None, Depends(JWTBearer())], signData: SignIn_request_pydantic, response: Response) -> str:
         existingSecretaryData: Admissions_committee_secretary | None = await prisma.admissions_committee_secretary.find_unique(where = { 'login': signData.login })
 
         if existingSecretaryData == None: raise HTTPException(status_code = 400, detail = "Secretary does not exists.")
 
-        return await self.__signService.signIn(signData, existingSecretaryData, response, self.__commonService)
+        return await self.__signService.signIn(signData, existingSecretaryData, jwt, response, self.__commonService)
     
 
     @put('/out')
@@ -57,6 +57,8 @@ class SignController (Controller):
         return await self.__signService.signOut(jwt)
 
 
-    @get('/getActiveClient', response_class = Dict[ str, str | int | datetime | None ])
-    async def getActiveClient (self, jwt: Annotated[str, Depends(JWTBearer())], secure_fgp: str = Cookie()) -> Dict[ str, str | int | datetime | None ]:
-        return await self.__signService.getActiveClient(jwt, secure_fgp)
+    @get('/getActiveClient', response_class = JSONResponse)
+    async def getActiveClient (self, jwt: Annotated[str | None, Depends(JWTBearer())]) -> Dict[ str, str | int | datetime | None ] | None:
+        if jwt == None: return None
+
+        return await self.__signService.getActiveClient(jwt)

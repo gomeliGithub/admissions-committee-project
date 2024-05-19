@@ -25,10 +25,10 @@ class ApplicantController (Controller):
 
     def __init__ (self, applicantService: ApplicantService = Depends(ApplicantService)) -> None:
         self.__applicantService = applicantService
-    
 
-    @get('/getApplicantData', dependencies = [Depends(JWTBearer())], response_class = Applicant_get_response_pydantic)
-    async def getApplicantData (self, applicantData: Applicant_get_request_pydantic):
+
+    @get('/getApplicantData', dependencies = [Depends(JWTBearer())], response_model = Applicant_get_response_pydantic)
+    async def getApplicantData (self, applicantData: Applicant_get_request_pydantic = Depends()):
         return await self.__applicantService.getApplicantData(applicantData)
     
 

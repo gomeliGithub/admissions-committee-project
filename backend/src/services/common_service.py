@@ -37,17 +37,6 @@ class CommonService:
         'samesite': 'strict'
     }
 
-
-    async def checkAccessMain (self, jwt: str, secure_fgp: str) -> bool:
-        if secure_fgp == '': return False
-
-        # jwtPayload: Dict[ str, str | int | datetime | None ] = await mainService.getActiveClient(jwt, secure_fgp)
-
-        # if jwtPayload == { }: return False
-
-        return True
-
-
     async def getAllData (self, applicantService: ApplicantService, examService: ExamService, applicantData: Applicant_get_request_pydantic) -> Dict[ str, Dict[str, List[Applicant] | bool] | List[int] | list[Dict[str, str | int]] | int ]:
         applicantDataList: Dict[ str, List[ Applicant ] | bool ] = cast(Dict[ str, List[ Applicant ] | bool ], await applicantService.getApplicantData(applicantData))
         facultiesPassingScore: List[int] = [ passingScore for passingScore in map(lambda faculty: faculty.passingScore, await prisma.faculty.find_many(where = { 'passingScore': True })) ]

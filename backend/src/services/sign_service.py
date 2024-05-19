@@ -30,6 +30,8 @@ from ..auth.auth_handler import (
     decode_jwt
 )
 
+from src.auth.additionalJWT import checkRevokedJWTIs
+
 from ..config.config import settings
 
 from ..pydanticClasses.signData import SignIn_request_pydantic
@@ -42,7 +44,9 @@ class SignService:
         pass
 
 
-    async def signIn (self, signData: SignIn_request_pydantic, existingSecretaryData: Admissions_committee_secretary, response: Response, commonService: CommonService) -> str:
+    async def signIn (self, signData: SignIn_request_pydantic, existingSecretaryData: Admissions_committee_secretary, jwt: str | None, response: Response, commonService: CommonService) -> str:
+        if jwt != None: await self.__addRevokedJWT(jwt)
+
         clientLogin: str = signData.login.strip()
         clientPassword: str = signData.password.strip()
 
@@ -74,48 +78,29 @@ class SignService:
                     'id': existingSecretaryData.id
                 })
 
-                token: str = sign_jwt(jwtPayload)
+                newJwt: str = sign_jwt(jwtPayload)
 
-                await self.__saveJWT(token)
+                await self.__saveJWT(newJwt)
 
                 response.set_cookie(key = '__secure_fgp', value = __secure_fgpData['__secure_fgp'], **commonService.cookieParameters)
 
-                return token
+                return newJwt
             else: raise HTTPException(status_code = 401, detail = "Password is invalid.")
         else: raise HTTPException(status_code = 400, detail = "Login and existing secretary login does not mathing.")
 
 
     async def signOut (self, jwt: str) -> None:
-        if jwt == '' : raise HTTPException(status_code = 401, detail = "Empty token.")
-
         return await self.__addRevokedJWT(jwt)
 
 
-    async def getActiveClient (self, jwt: str, secure_fgp: str, raiseError = True) -> Dict[ str, str | int | datetime | None ]:
-        jwtPayload: Dict[ str, str | int | datetime | None ] = cast(Dict[ str, str | int | datetime | None ], await self.__jwtValidate(jwt, secure_fgp))
+    async def getActiveClient (self, jwt: str, raiseError = True) -> Dict[ str, str | int | datetime | None ] | None:
+        jwtPayload: Dict[ str, str | int | datetime | None ] = cast(Dict[ str, str | int | datetime | None ], decode_jwt(jwt))
 
         existingSecretaryData: Admissions_committee_secretary | None = await prisma.admissions_committee_secretary.find_unique(where = { 'login': cast(str, jwtPayload['login']) })
 
         if existingSecretaryData == None: 
             if raiseError == True: raise HTTPException(status_code = 401, detail = "Secretary instance does not exists.")
-            else: return { }
-
-        return jwtPayload
-
-
-    async def __jwtValidate (self, jwt: str, secure_fgp: str) -> Dict[ str, str | int | datetime | None ] | None:
-        try:
-            jwtPayload: Dict[ str, str | int | datetime | None ] | None = decode_jwt(jwt)
-        except:
-            jwtPayload = None
-
-        if jwtPayload != None:
-            client__secure_fgpHash: str = hashlib.sha256(secure_fgp.encode('utf-8')).hexdigest()
-
-            jwtIsRevoked: bool = await self.__validateRevokedJWT(jwt)
-
-            if client__secure_fgpHash != jwtPayload['__secure_fgpHash'] or jwtIsRevoked == False: raise HTTPException(status_code = 401, detail = "Secure fingerprint hash is invalid.")
-        else: raise HTTPException(status_code = 401, detail = "JWT payload is empty.")
+            else: return None
 
         return jwtPayload
 
@@ -135,7 +120,7 @@ class SignService:
 
 
     async def __addRevokedJWT (self, jwt: str) -> None:
-        revokedJWTData: JWT_token | None = await self.__checkRevokedJWTIs(jwt)
+        revokedJWTData: JWT_token | None = await checkRevokedJWTIs(jwt)
 
         if revokedJWTData == None:
             jwt_hash: str = hashlib.sha256(jwt.encode('utf-8')).hexdigest()
@@ -148,29 +133,7 @@ class SignService:
                     'revoked': True 
                 }
             )
-    
-    
-    async def __checkRevokedJWTIs (self, jwt: str) -> JWT_token | None:
-        jwt_hash: str = hashlib.sha256(jwt.encode('utf-8')).hexdigest()
 
-        revokedJWTData: JWT_token | None = await prisma.jwt_token.find_first(where = {
-            'jwt_hash': jwt_hash,
-            'revoked': True
-        })
-
-        return revokedJWTData
-    
-
-    async def __validateRevokedJWT (self, jwt: str) -> bool:
-        revokedJWTData: JWT_token | None = await self.__checkRevokedJWTIs(jwt)
-
-        datetimeNow: datetime = datetime.now()
-
-        if revokedJWTData != None:
-            if datetimeNow > revokedJWTData.revokation_date: return False
-
-        return True
-    
 
     def __generate__secure_fgp (self) -> Dict[ str, str ]:
         __secure_fgp: str = ''.join(random.choices(string.ascii_letters, k = 50))

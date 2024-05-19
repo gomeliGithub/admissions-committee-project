@@ -20,7 +20,7 @@
                     </button>
                 </div>
                 <ng-template #signInBlock>
-                    <a class="btn btn-info" tabindex="-1" role="button" aria-disabled="true" [routerLink]="['/sign', 'in']">
+                    <a *ngIf="!signInIsCurrentPage" class="btn btn-info" tabindex="-1" role="button" aria-disabled="true" [routerLink]="['/sign', 'in']">
                         Вход
                     </a>
                 </ng-template>
