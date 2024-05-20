@@ -5,7 +5,7 @@ import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
-import { IRequestApplicantData, IResponseApplicantData } from 'types/global';
+import { ICreateRequestApplicantData, IGetRequestApplicantData, IGetResponseApplicantData } from 'types/global';
 import { IDepartment, IFaculty, IStudyGroup } from 'types/models';
 
 @Injectable({
@@ -20,7 +20,7 @@ export class MainService {
         this._apiURL = environment.apiURL;
     }
 
-    public getApplicantList (applicantData: IRequestApplicantData): Observable<IResponseApplicantData> {
+    public getApplicantList (applicantData: IGetRequestApplicantData): Observable<IGetResponseApplicantData> {
         let params: HttpParams = new HttpParams();
 
         params = params.append('limitCount', applicantData.limitCount)
@@ -33,7 +33,7 @@ export class MainService {
         if ( applicantData.facultyId ) params = params.append('facultyId', applicantData.facultyId)
         if ( applicantData.studyGroupId ) params = params.append('studyGroupId', applicantData.studyGroupId)
 
-        return this._http.get<IResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params }).pipe(map(applicantData => {
+        return this._http.get<IGetResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params }).pipe(map(applicantData => {
             applicantData.applicantList.forEach(item => {
                 if ( item.graduatedInstitutions ) {
                     const parsedGraduatedInstitutions: string[] = JSON.parse(item.graduatedInstitutions);
@@ -62,5 +62,9 @@ export class MainService {
 
     public getStudyGroupData (): Observable<IStudyGroup[]> {
         return this._http.get<IStudyGroup[]>(`${ this._apiURL }/exam/getStudyGroupData`, { withCredentials: true });
+    }
+
+    public createApplicant (applicantData: ICreateRequestApplicantData): Observable<void> {
+        return this._http.post<void>(`${ this._apiURL }/applicant/createApplicant`, applicantData, { withCredentials: true });
     }
 }

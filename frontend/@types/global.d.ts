@@ -9,7 +9,7 @@ export interface IAlert {
 	closeTimeout: number;
 }
 
-export interface IRequestApplicantData {
+export interface IGetRequestApplicantData {
 	ids?: number[];
     graduatedInstitutions?: string[];
     enrolled?: boolean;
@@ -20,7 +20,16 @@ export interface IRequestApplicantData {
     offsetCount: number;
 }
 
-export interface IResponseApplicantData {
+export interface IGetResponseApplicantData {
     applicantList: IApplicant[];
     nextApplicantsIsExists: boolean;
+}
+
+export interface ICreateRequestApplicantData {
+    fullName: string;
+    graduatedInstitutions: string;
+    departmentId: number;
+    facultyId: number;
+    studyGroupId: number;
+    medal?: boolean;
 }

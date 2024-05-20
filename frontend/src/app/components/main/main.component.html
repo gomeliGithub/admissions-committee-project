@@ -30,7 +30,7 @@
                 </select>
             </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-3 text-center">
             <button [disabled]="applicantSearchForm.invalid" class="btn btn-info">
                 Найти
             </button>
@@ -71,4 +71,72 @@
             <span>Абитуриенты отсутствуют</span>
         </div>
     </ng-template>
+</div>
+<div class="w-100">
+    <div ngbAccordion class="align-self-center my-3 w-50 mx-auto" id="uploadImageAccordion">
+        <div ngbAccordionItem [collapsed]="true">
+            <h2 ngbAccordionHeader>
+                <button ngbAccordionButton>Создать абитуриента</button>
+            </h2>
+            <div ngbAccordionCollapse>
+                <div ngbAccordionBody>
+                    <ng-template>
+                        <form [formGroup]="createApplicantForm" novalidate (ngSubmit)="createApplicantFormSubmit()">
+                            <div class="row mb-3">
+                                <label for="inputFullName" class="col-sm-2 col-form-label">ФИО</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputFullName" formControlName="fullName">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="inputGraduatedInstitutions" class="col-sm-2 col-form-label">Оконченные учебные заведения</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputGraduatedInstitutions" formControlName="graduatedInstitutions">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="inputFacultyTitle" class="col-sm-2 col-form-label">Факультет</label>
+                                <div class="col-sm-10">
+                                    <select class="form-select" id="inputFacultyTitle" formControlName="facultyTitle">
+                                        <option *ngFor="let facultyData of facultyList; let isFirst = first" [selected]="isFirst">
+                                            {{ facultyData.title }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="inputDepartmentTitle" class="col-sm-2 col-form-label">Кафедра</label>
+                                <div class="col-sm-10">
+                                    <select class="form-select" id="inputDepartmentTitle" formControlName="departmentTitle">
+                                        <option *ngFor="let departmentData of departmentList; let isFirst = first" [selected]="isFirst">
+                                            {{ departmentData.title }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="inputStudyGroupTitle" class="col-sm-2 col-form-label">Группа</label>
+                                <div class="col-sm-10">
+                                    <select class="form-select" id="inputStudyGroupTitle" formControlName="studyGroupTitle">
+                                        <option *ngFor="let studyGroupData of studyGroupList; let isFirst = first" [selected]="isFirst">
+                                            {{ studyGroupData.title }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-check form-check-reverse form-switch row mb-3 text-start" [ngStyle]="{ 'paddingRight': '3.2em' }">
+                                <label for="inputMedal" class="col-sm-10 form-check-label">Медалист</label>
+                                <input type="checkbox" role="switch" class="col-sm-2 form-check-input" id="inputMedal" formControlName="medal">
+                            </div>
+                            <div class="my-3 text-center">
+                                <button [disabled]="applicantSearchForm.invalid" class="btn btn-primary">
+                                    Создать
+                                </button>
+                            </div>
+                        </form>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

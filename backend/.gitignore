@@ -23,6 +23,7 @@ config
 
 # Prisma
 migrations
+.binaries
 
 # Logs
 logs

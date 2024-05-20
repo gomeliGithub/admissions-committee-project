@@ -76,7 +76,6 @@ class ApplicantService:
             'fullName': applicantData.fullName,
             'graduatedInstitutions': Json(applicantData.graduatedInstitutions),
             'medal': cast(bool, applicantData.medal),
-            'enrolled': cast(bool, applicantData.enrolled),
             'department': { 'connect': { 'id': applicantData.departmentId } },
             'faculty': { 'connect': { 'id': applicantData.facultyId } },
             'study_group': { 'connect': { 'id': applicantData.studyGroupId } }

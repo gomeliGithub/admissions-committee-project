@@ -1,9 +1,4 @@
-from typing import Annotated
-
-from fastapi import (
-    Cookie, 
-    Depends
-)
+from fastapi import Depends
 
 from fastapi_controllers import (
     Controller, 

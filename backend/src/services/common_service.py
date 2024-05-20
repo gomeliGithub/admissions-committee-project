@@ -4,8 +4,6 @@ from typing import (
     cast
 )
 
-from datetime import datetime
-
 from src.prisma import prisma
 from prisma.models import (
     Applicant,

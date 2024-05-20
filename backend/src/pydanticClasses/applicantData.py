@@ -50,7 +50,6 @@ class Applicant_create_request_pydantic (BaseModel):
     departmentId: int = Field(gt = 0)
     facultyId: int = Field(gt = 0)
     studyGroupId: int = Field(ge = 3)
-    enrolled: bool | None = Field(default = None)
 
 
 class Applicant_update_request_pydantic (BaseModel):
