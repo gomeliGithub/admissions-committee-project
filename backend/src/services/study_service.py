@@ -25,7 +25,7 @@ from ..pydanticClasses.examData import (
 )
 
 
-class ExamService:
+class StudyService:
     def __init__ (self):
         pass
 
@@ -80,10 +80,11 @@ class ExamService:
 
     async def createExam (self, examData: Exam_create_request_pydantic) -> None:
         whereParams: ExamCreateInput = {
-            'isConsultation': examData.isConsultation,
             'conductingDate': examData.conductingDate,
             'classroom': examData.classroom
         }
+
+        if examData.isConsultation != None: whereParams['isConsultation'] = examData.isConsultation
 
         if examData.studyGroupId != None: whereParams['study_group'] = { 'connect': { 'id': examData.studyGroupId } }
 
