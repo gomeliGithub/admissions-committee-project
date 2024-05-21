@@ -144,23 +144,16 @@ export class MainComponent implements OnInit {
         
         const applicantData: ICreateRequestApplicantData = {
             fullName: createApplicantFormValue.fullName as string,
-            graduatedInstitutions: createApplicantFormValue.graduatedInstitutions as string,
+            graduatedInstitutions: createApplicantFormValue.graduatedInstitutions?.split(/[\s,]+/) as string[],
             facultyId: this.facultyList.find(facultyData => facultyData.title === createApplicantFormValue.faculty as string)?.id as number,
             departmentId: this.departmentList.find(departmentData => departmentData.title === createApplicantFormValue.department as string)?.id as number,
             studyGroupId: this.studyGroupList.find(studyGroupData => studyGroupData.title === createApplicantFormValue.studyGroup as string)?.id as number,
             medal: createApplicantFormValue.medal as boolean
         }
 
-
-
-        console.log(applicantData);
-
-
-        /*
         this._mainService.createApplicant(applicantData).subscribe({
             next: () => null,
             error: () => this._appService.createAndAddErrorAlert()
         });
-        */
     }
 }

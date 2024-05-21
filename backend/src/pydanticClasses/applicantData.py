@@ -25,21 +25,13 @@ class Applicant_get_request_pydantic (BaseModel):
     @field_validator('ids')
     @classmethod
     def ensure_ids_length (cls, value: str | None) -> list[int | str] | None:
-        decodedValue: list[int | str] | None = None
-
-        if value != None: decodedValue = json.loads(value)
-
-        return ensure_list_length(decodedValue, 1)
+        return graduatedInstitutionsValidator(value)
     
 
     @field_validator('graduatedInstitutions')
     @classmethod
-    def ensure_graduatedInstitutions_length (cls, value: str) -> list[int | str] | None:
-        decodedValue: list[int | str] | None = None
-
-        if value != None: decodedValue = json.loads(value)
-
-        return ensure_list_length(decodedValue, 1)
+    def ensure_graduatedInstitutions_length (cls, value: str | None) -> list[int | str] | None:
+        return graduatedInstitutionsValidator(value)
 
 
 
@@ -49,7 +41,12 @@ class Applicant_create_request_pydantic (BaseModel):
     medal: bool | None = Field(default = None)
     departmentId: int = Field(gt = 0)
     facultyId: int = Field(gt = 0)
-    studyGroupId: int = Field(ge = 3)
+    studyGroupId: int = Field(ge = 1)
+
+    @field_validator('graduatedInstitutions')
+    @classmethod
+    def ensure_graduatedInstitutions_length (cls, value: str) -> list[int | str] | None:
+        return graduatedInstitutionsValidator(value)
 
 
 class Applicant_update_request_pydantic (BaseModel):
@@ -81,3 +78,11 @@ def ensure_list_length (listValue: list[int | str] | None, minLength: int) -> li
     elif listValue == None: return None
         
     return listValue
+
+
+def graduatedInstitutionsValidator (value: str | None) -> list[int | str] | None:
+    decodedValue: list[int | str] | None = None
+
+    if value != None: decodedValue = json.loads(value)
+
+    return ensure_list_length(decodedValue, 1)

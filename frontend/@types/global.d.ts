@@ -27,7 +27,7 @@ export interface IGetResponseApplicantData {
 
 export interface ICreateRequestApplicantData {
     fullName: string;
-    graduatedInstitutions: string;
+    graduatedInstitutions: string[];
     departmentId: number;
     facultyId: number;
     studyGroupId: number;
