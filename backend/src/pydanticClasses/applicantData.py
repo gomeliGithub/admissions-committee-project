@@ -25,13 +25,13 @@ class Applicant_get_request_pydantic (BaseModel):
     @field_validator('ids')
     @classmethod
     def ensure_ids_length (cls, value: str | None) -> list[int | str] | None:
-        return graduatedInstitutionsValidator(value)
+        return listLengthValidator(value, 1)
     
 
     @field_validator('graduatedInstitutions')
     @classmethod
     def ensure_graduatedInstitutions_length (cls, value: str | None) -> list[int | str] | None:
-        return graduatedInstitutionsValidator(value)
+        return listLengthValidator(value, 1)
 
 
 
@@ -46,13 +46,13 @@ class Applicant_create_request_pydantic (BaseModel):
     @field_validator('graduatedInstitutions')
     @classmethod
     def ensure_graduatedInstitutions_length (cls, value: str) -> list[int | str] | None:
-        return graduatedInstitutionsValidator(value)
+        return listLengthValidator(value, 1)
 
 
 class Applicant_update_request_pydantic (BaseModel):
     id: int = Field(ge = 1)
     fullName: str | None = Field(default = None, min_length = 10)
-    graduatedInstitutions: list[str] | None
+    graduatedInstitutions: list[str] | None = Field()
     medal: bool | None = Field(default = None, min_length = 5)
     departmentId: int | None = Field(default = None, gt = 0)
     facultyId: int | None = Field(default = None, gt = 0)
@@ -62,8 +62,8 @@ class Applicant_update_request_pydantic (BaseModel):
 
     @field_validator('graduatedInstitutions')
     @classmethod
-    def ensure_graduatedInstitutions_length (cls, value: list[int | str]) -> list[int | str] | None:
-        return ensure_list_length(value, 1)
+    def ensure_graduatedInstitutions_length (cls, value: list[int | str] | None) -> list[int | str] | None:
+        return listLengthValidator(value, 1)
 
 
 class Applicant_get_response_pydantic (BaseModel):
@@ -71,18 +71,15 @@ class Applicant_get_response_pydantic (BaseModel):
     nextApplicantsIsExists: bool
 
 
-def ensure_list_length (listValue: list[int | str] | None, minLength: int) -> list[int | str] | None:
-    if listValue == None: return listValue
+def listLengthValidator (value: str | list[int | str] | None, minLength: int) -> list[int | str] | None:
+    decodedListValue: list[ int | str ] | None = None
 
-    if len(listValue) < minLength: raise ValueError()
-    elif listValue == None: return None
+    if value != None and type(value) == "<class 'str'>": decodedListValue = json.loads(cast(str, value))
+    else: decodedListValue = cast(list[int | str] | None, value)
+
+    if decodedListValue == None: return decodedListValue
+
+    if len(decodedListValue) < minLength: raise ValueError()
+    elif decodedListValue == None: return None
         
-    return listValue
-
-
-def graduatedInstitutionsValidator (value: str | list[str] | None) -> list[int | str] | None:
-    decodedValue: list[ int | str ] | None = None
-
-    if value != None and type(value) == "<class 'str'>": decodedValue = json.loads(cast(str, value))
-
-    return ensure_list_length(decodedValue, 1)
+    return decodedListValue
