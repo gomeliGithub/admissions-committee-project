@@ -80,9 +80,9 @@ def ensure_list_length (listValue: list[int | str] | None, minLength: int) -> li
     return listValue
 
 
-def graduatedInstitutionsValidator (value: str | None) -> list[int | str] | None:
-    decodedValue: list[int | str] | None = None
+def graduatedInstitutionsValidator (value: str | list[str] | None) -> list[int | str] | None:
+    decodedValue: list[ int | str ] | None = None
 
-    if value != None: decodedValue = json.loads(value)
+    if value != None and type(value) == "<class 'str'>": decodedValue = json.loads(cast(str, value))
 
     return ensure_list_length(decodedValue, 1)
