@@ -1,7 +1,10 @@
 from typing import (
     Dict, 
-    List
+    List,
+    cast
 )
+
+import json
 
 from prisma import Json
 from prisma.models import Applicant
@@ -33,7 +36,7 @@ class ApplicantService:
             whereParams: ApplicantWhereInput = { }
 
             if applicantData.ids != None: whereParams['id'] = { 'in': applicantData.ids }
-            if applicantData.graduatedInstitutions != None: whereParams['graduatedInstitutions'] = Json(applicantData.graduatedInstitutions)
+            if applicantData.graduatedInstitutions != None: whereParams['graduatedInstitutions'] = cast(Json, json.dumps(applicantData.graduatedInstitutions))
             if applicantData.enrolled != None: whereParams['enrolled'] = applicantData.enrolled
 
             if applicantData.departmentId != None or applicantData.facultyId != None or applicantData.studyGroupId != None:
@@ -73,7 +76,7 @@ class ApplicantService:
     async def createApplicant (self, applicantData: Applicant_create_request_pydantic) -> None:
         createData: ApplicantCreateInput = {
             'fullName': applicantData.fullName,
-            'graduatedInstitutions': Json(applicantData.graduatedInstitutions),
+            'graduatedInstitutions': cast(Json, json.dumps(applicantData.graduatedInstitutions)),
             'department': { 'connect': { 'id': applicantData.departmentId } },
             'faculty': { 'connect': { 'id': applicantData.facultyId } },
             'study_group': { 'connect': { 'id': applicantData.studyGroupId } }
@@ -88,7 +91,7 @@ class ApplicantService:
         updateData: ApplicantUpdateInput = { }
 
         if applicantData.fullName != None: updateData['fullName'] = applicantData.fullName
-        if applicantData.graduatedInstitutions != None: updateData['graduatedInstitutions'] = Json(applicantData.graduatedInstitutions)
+        if applicantData.graduatedInstitutions != None: updateData['graduatedInstitutions'] = cast(Json, json.dumps(applicantData.graduatedInstitutions))
         if applicantData.medal != None: updateData['medal'] = applicantData.medal
         if applicantData.enrolled != None: updateData['enrolled'] = applicantData.enrolled
 
