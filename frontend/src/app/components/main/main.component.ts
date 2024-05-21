@@ -41,6 +41,8 @@ export class MainComponent implements OnInit {
         medal?: FormControl<boolean | null>;
     }>;
 
+    public createApplicantFormAccordionIsCollapsed: boolean = true;
+
     constructor (
         private readonly _appService: AppService,
         private readonly _mainService: MainService
@@ -152,7 +154,12 @@ export class MainComponent implements OnInit {
         }
 
         this._mainService.createApplicant(applicantData).subscribe({
-            next: () => null,
+            next: () => {
+                this.createApplicantForm.reset();
+                this.createApplicantFormAccordionIsCollapsed = true;
+
+                this._appService.createAndAddSuccessAlert("Абитуриент успешно зарегистрирован");
+            },
             error: () => this._appService.createAndAddErrorAlert()
         });
     }
