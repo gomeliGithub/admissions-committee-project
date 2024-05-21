@@ -48,7 +48,7 @@ class CommonService:
 
             commonCount += currentCount
 
-            index =+ 1
+            index += 1
         else:
             universityPassingScore = commonCount // len(facultiesPassingScore)
 
@@ -70,7 +70,7 @@ class CommonService:
 
             if currentCount != None: commonCount += int(currentCount)
 
-            index =+ 1
+            index += 1
         else:
             enrolledApplicantUniversityCount = commonCount
 

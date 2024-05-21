@@ -15,6 +15,7 @@ model Applicant {
     graduatedInstitutions    Json
     medal                    Boolean                           @default(false)
     enrolled                 Boolean                           @default(false)
+    createDate               DateTime                          @default(now())
     study_group              Study_group?
     examination_sheet        Examination_sheet?
     department               Department                        @relation(fields: [departmentId], references: [id])
@@ -26,8 +27,8 @@ model Applicant {
 model Study_group {
     id                       Int                               @id @default(autoincrement())
     title                    String                            @unique
-    applicant                Applicant                         @relation(fields: [applicantId], references: [id])
-    applicantId              Int                               @unique
+    applicant                Applicant?                        @relation(fields: [applicantId], references: [id])
+    applicantId              Int?                              @unique
     exams                    Exam[]
 }
 
@@ -71,7 +72,6 @@ model Exam {
     isConsultation           Boolean                           @default(false)
     conductingDate           DateTime
     classroom                String
-    createDate               DateTime                          @default(now())
     study_group              Study_group?                      @relation(fields: [study_groupId], references: [id])
     study_groupId            Int?
 }
@@ -80,7 +80,7 @@ model Specialty {
     id                       Int                               @id @default(autoincrement())
     passingScore             Int                               @default(0)
     competition              Int                               @default(0)
-    title                    String                            @unique
+    title                    String                            @db.VarChar(255) @unique
     faculty                  Faculty?                          @relation(fields: [facultyId], references: [id])
     facultyId                Int?
 }
