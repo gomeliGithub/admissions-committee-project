@@ -122,7 +122,7 @@ async def createStudyData () -> None:
                 'classroom': f'Каб-{ index }'
             })
 
-    index = 0
+    index = 1
 
     for studyGroupTitle in STUDY_GROUPS_TITLE_SET:
         existingStudyGroupData: Study_group | None = await prisma.study_group.find_unique(where = { 'title': studyGroupTitle })
