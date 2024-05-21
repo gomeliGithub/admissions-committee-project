@@ -32,11 +32,11 @@ class ApplicantController (Controller):
         return await self.__applicantService.getApplicantData(applicantData)
     
 
-    @post('/createApplicant', dependencies = [Depends(JWTBearer())], response_class = None)
+    @post('/createApplicant', dependencies = [Depends(JWTBearer())])
     async def createApplicant (self, applicantData: Applicant_create_request_pydantic) -> None:
         return await self.__applicantService.createApplicant(applicantData)
     
 
-    @put('/updateApplicant', dependencies = [Depends(JWTBearer())], response_class = None)
+    @put('/updateApplicant', dependencies = [Depends(JWTBearer())])
     async def updateApplicant (self, applicantData: Applicant_update_request_pydantic) -> None:
         return await self.__applicantService.updateApplicant(applicantData)
