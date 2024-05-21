@@ -95,9 +95,9 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="inputFacultyTitle" class="col-sm-2 col-form-label">Факультет</label>
+                                <label for="inputFaculty" class="col-sm-2 col-form-label">Факультет</label>
                                 <div class="col-sm-10">
-                                    <select class="form-select" id="inputFacultyTitle" formControlName="facultyTitle">
+                                    <select class="form-select" id="inputFaculty" formControlName="faculty">
                                         <option *ngFor="let facultyData of facultyList; let isFirst = first" [selected]="isFirst">
                                             {{ facultyData.title }}
                                         </option>
@@ -105,9 +105,9 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="inputDepartmentTitle" class="col-sm-2 col-form-label">Кафедра</label>
+                                <label for="inputDepartment" class="col-sm-2 col-form-label">Кафедра</label>
                                 <div class="col-sm-10">
-                                    <select class="form-select" id="inputDepartmentTitle" formControlName="departmentTitle">
+                                    <select class="form-select" id="inputDepartment" formControlName="department">
                                         <option *ngFor="let departmentData of departmentList; let isFirst = first" [selected]="isFirst">
                                             {{ departmentData.title }}
                                         </option>
@@ -115,9 +115,9 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="inputStudyGroupTitle" class="col-sm-2 col-form-label">Группа</label>
+                                <label for="inputStudyGroup" class="col-sm-2 col-form-label">Группа</label>
                                 <div class="col-sm-10">
-                                    <select class="form-select" id="inputStudyGroupTitle" formControlName="studyGroupTitle">
+                                    <select class="form-select" id="inputStudyGroup" formControlName="studyGroup">
                                         <option *ngFor="let studyGroupData of studyGroupList; let isFirst = first" [selected]="isFirst">
                                             {{ studyGroupData.title }}
                                         </option>

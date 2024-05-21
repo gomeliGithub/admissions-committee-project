@@ -35,9 +35,9 @@ export class MainComponent implements OnInit {
     public createApplicantForm: FormGroup<{
         fullName: FormControl<string | null>;
         graduatedInstitutions: FormControl<string | null>;
-        facultyTitle: FormControl<string | null>;
-        departmentTitle: FormControl<string | null>;
-        studyGroupTitle: FormControl<string | null>;
+        faculty: FormControl<string | null>;
+        department: FormControl<string | null>;
+        studyGroup: FormControl<string | null>;
         medal?: FormControl<boolean | null>;
     }>;
 
@@ -53,17 +53,32 @@ export class MainComponent implements OnInit {
         });
 
         this.getFacultyData().subscribe({
-            next: data => this.facultyList = data,
+            next: data => {
+                this.facultyList = data;
+
+                this.applicantSearchForm.controls['faculty'].setValue(this.facultyList.length !== 0 ? this.facultyList[0].title : null);
+                this.createApplicantForm.controls['faculty'].setValue(this.facultyList.length !== 0 ? this.facultyList[0].title : null);
+            },
             error: () => this._appService.createAndAddErrorAlert()
         });
 
         this.getDepartmentData().subscribe({
-            next: data => this.departmentList = data,
+            next: data => {
+                this.departmentList = data;
+
+                this.applicantSearchForm.controls['department'].setValue(this.departmentList.length !== 0 ? this.departmentList[0].title : null);
+                this.createApplicantForm.controls['department'].setValue(this.departmentList.length !== 0 ? this.departmentList[0].title : null);
+            },
             error: () => this._appService.createAndAddErrorAlert()
         });
 
         this.getStudyGroupData().subscribe({
-            next: data => this.studyGroupList = data,
+            next: data => {
+                this.studyGroupList = data;
+
+                this.applicantSearchForm.controls['studyGroup'].setValue(this.studyGroupList.length !== 0 ? this.studyGroupList[0].title : null);
+                this.createApplicantForm.controls['studyGroup'].setValue(this.studyGroupList.length !== 0 ? this.studyGroupList[0].title : null);
+            },
             error: () => this._appService.createAndAddErrorAlert()
         });
 
@@ -80,16 +95,16 @@ export class MainComponent implements OnInit {
         const createApplicantFormControls: {
             fullName: FormControl<string | null>;
             graduatedInstitutions: FormControl<string | null>;
-            facultyTitle: FormControl<string | null>;
-            departmentTitle: FormControl<string | null>;
-            studyGroupTitle: FormControl<string | null>;
+            faculty: FormControl<string | null>;
+            department: FormControl<string | null>;
+            studyGroup: FormControl<string | null>;
             medal?: FormControl<boolean | null>;
         } = {
             'fullName': new FormControl(null, Validators.required),
             'graduatedInstitutions': new FormControl(null, Validators.required),
-            'facultyTitle': new FormControl(null, Validators.required),
-            'departmentTitle': new FormControl(null, Validators.required),
-            'studyGroupTitle': new FormControl(null, Validators.required),
+            'faculty': new FormControl(null, Validators.required),
+            'department': new FormControl(null, Validators.required),
+            'studyGroup': new FormControl(null, Validators.required),
             'medal': new FormControl(null)
         }
 
@@ -97,11 +112,7 @@ export class MainComponent implements OnInit {
         this.createApplicantForm = new FormGroup(createApplicantFormControls);
     }
 
-    ngOnInit (): void {
-        this.applicantSearchForm.controls['faculty'].setValue(this.facultyList.length !== 0 ? this.facultyList[0].title : null);
-        this.applicantSearchForm.controls['department'].setValue(this.departmentList.length !== 0 ? this.departmentList[0].title : null);
-        this.applicantSearchForm.controls['studyGroup'].setValue(this.studyGroupList.length !== 0 ? this.studyGroupList[0].title : null);
-    }
+    ngOnInit (): void { }
 
     public getApplicantList (): Observable<IGetResponseApplicantData> {
         return this._mainService.getApplicantList({
@@ -134,9 +145,9 @@ export class MainComponent implements OnInit {
         const applicantData: ICreateRequestApplicantData = {
             fullName: createApplicantFormValue.fullName as string,
             graduatedInstitutions: createApplicantFormValue.graduatedInstitutions as string,
-            facultyId: this.facultyList.findIndex(facultyData => facultyData.title === createApplicantFormValue.facultyTitle as string),
-            departmentId: this.departmentList.findIndex(departmentData => departmentData.title === createApplicantFormValue.departmentTitle as string),
-            studyGroupId: this.studyGroupList.findIndex(studyGroupData => studyGroupData.title === createApplicantFormValue.studyGroupTitle as string),
+            facultyId: this.facultyList.find(facultyData => facultyData.title === createApplicantFormValue.faculty as string)?.id as number,
+            departmentId: this.departmentList.find(departmentData => departmentData.title === createApplicantFormValue.department as string)?.id as number,
+            studyGroupId: this.studyGroupList.find(studyGroupData => studyGroupData.title === createApplicantFormValue.studyGroup as string)?.id as number,
             medal: createApplicantFormValue.medal as boolean
         }
 
