@@ -24,42 +24,42 @@ from ..pydanticClasses.examData import (
     Specialty_get_request_pydantic
 )
 
-from ..services.exam_service import ExamService
+from ..services.study_service import StudyService
 
 
-class ExamController (Controller):
-    __examService: ExamService
+class StudyController (Controller):
+    __studyService: StudyService
 
 
-    def __init__ (self, examService: ExamService = Depends(ExamService)) -> None:
-        self.__examService = examService
+    def __init__ (self, studyService: StudyService = Depends(StudyService)) -> None:
+        self.__studyService = studyService
 
 
     @get('/getExamData', dependencies = [Depends(JWTBearer())], response_class = List[Exam])
     async def getExamData (self, examData: Exam_get_request_pydantic):
-        return await self.__examService.getExamData(examData)
+        return await self.__studyService.getExamData(examData)
     
 
     @get('/getFacultyData', dependencies = [Depends(JWTBearer())])
     async def getFacultyData (self) -> List[Faculty]:
-        return await self.__examService.getFacultyData()
+        return await self.__studyService.getFacultyData()
     
 
     @get('/getDepartmentData', dependencies = [Depends(JWTBearer())])
     async def getDepartmentData (self, examData: Department_get_request_pydantic = Depends()) -> List[Department]:
-        return await self.__examService.getDepartmentData(examData)
+        return await self.__studyService.getDepartmentData(examData)
     
 
     @get('/getStudyGroupData', dependencies = [Depends(JWTBearer())])
     async def getStudyGroupData (self) -> List[Study_group]:
-        return await self.__examService.getStudyGroupData()
+        return await self.__studyService.getStudyGroupData()
 
 
     @get('/getSpecialtyData', dependencies = [Depends(JWTBearer())], response_class = List[Specialty])
     async def getSpecialtyData (self, specialtyData: Specialty_get_request_pydantic):
-        return await self.__examService.getSpecialtyData(specialtyData)
+        return await self.__studyService.getSpecialtyData(specialtyData)
     
 
     @get('/createExam', dependencies = [Depends(JWTBearer())], response_class = None)
     async def createExam (self, examData: Exam_create_request_pydantic) -> None:
-        return await self.__examService.createExam(examData)
+        return await self.__studyService.createExam(examData)

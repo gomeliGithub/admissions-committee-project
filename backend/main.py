@@ -1,4 +1,11 @@
 import os
+from typing import (
+    Dict,
+    List, 
+    Set,
+    cast
+)
+from datetime import datetime, timedelta
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,12 +13,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from src.prisma import prisma
-from prisma.models import Admissions_committee_secretary
+from prisma.types import (
+    DepartmentCreateWithoutRelationsInput,
+    SpecialtyCreateWithoutRelationsInput,
+    ExamWhereUniqueInput
+)
+from prisma.models import (
+    Admissions_committee_secretary,
+    Faculty,
+    Study_group
+)
 
 from argon2 import PasswordHasher
 
 from src.controllers.applicant_controller import ApplicantController
-from src.controllers.exam_controller import ExamController
+from src.controllers.study_controller import StudyController
 from src.controllers.sign_controller import SignController
 from src.controllers.common_controller import CommonController
 
@@ -19,12 +35,17 @@ from src.config.config import settings
 
 os.environ['DATABASE_URL'] = settings['DATABASE_URL']
 
+FACULTIES_AND_DEPARTMENTS_TITLE_DICT: Dict[ str, Dict[ str, Set[str]  | Dict[ str, set[str] ] ] ] = settings['FACULTIES_AND_DEPARTMENTS_TITLE_DICT']
+STUDY_SUBJECT_SET: Set[str] = settings['STUDY_SUBJECT_SET']
+STUDY_GROUPS_TITLE_SET: Set[str] = settings['STUDY_GROUPS_TITLE_SET']
+
 
 @asynccontextmanager
 async def lifespan (app: FastAPI):
     await prisma.connect()
 
-    await createAdmissionsCommitteeSecretary()
+    await createOrUpdateAdmissionsCommitteeSecretary()
+    await createStudyData()
 
     yield
 
@@ -42,21 +63,74 @@ app.add_middleware(
 )
 
 app.include_router(ApplicantController.create_router(), prefix = '/api/applicant')
-app.include_router(ExamController.create_router(), prefix = '/api/exam')
+app.include_router(StudyController.create_router(), prefix = '/api/study')
 app.include_router(SignController.create_router(), prefix = '/api/sign')
 app.include_router(CommonController.create_router(), prefix = '/api/main')
 
 
-async def createAdmissionsCommitteeSecretary () -> None:
-    existingSecretary: Admissions_committee_secretary | None = await prisma.admissions_committee_secretary.find_unique(where = { 'id': 1 })
+async def createOrUpdateAdmissionsCommitteeSecretary () -> None:
+    existingSecretaryData: Admissions_committee_secretary | None = await prisma.admissions_committee_secretary.find_unique(where = { 'id': 1 })
 
     passwordHasher = PasswordHasher()
 
     passwordHash: str = passwordHasher.hash('12345Admin')
 
-    if existingSecretary == None: 
+    if existingSecretaryData == None: 
         await prisma.admissions_committee_secretary.create(data = {
             'login': 'mainSecretary',
             'password': passwordHash
         })
     else: await prisma.admissions_committee_secretary.update(data = { 'password': passwordHash }, where = { 'id': 1 })
+
+
+async def createStudyData () -> None:
+    for facultyTitle in FACULTIES_AND_DEPARTMENTS_TITLE_DICT:
+        existingFacultyData: Faculty | None = await prisma.faculty.find_unique(where = { 'title': facultyTitle })
+
+        if existingFacultyData == None:
+            currentFacultyRelationDict: Dict[str, Set[str] | Dict[str, set[str]]] = cast(Dict[str, Set[str] | Dict[str, set[str]]], FACULTIES_AND_DEPARTMENTS_TITLE_DICT.get(facultyTitle))
+            currentDepartmentsTitleList: List[DepartmentCreateWithoutRelationsInput] = []
+            currentSpecialtiesTitleList: List[SpecialtyCreateWithoutRelationsInput] = []
+            
+            for departmentTitle in currentFacultyRelationDict['departmentsTitle']:
+                currentDepartmentsTitleList.append({ 'title': departmentTitle })
+            
+            for specialtyTitle in currentFacultyRelationDict['specialtiesTitle']:
+                currentSpecialtiesTitleList.append({ 'title': specialtyTitle })
+
+            await prisma.faculty.create(data = {
+                'title': facultyTitle,
+                'departments': {
+                    'create': currentDepartmentsTitleList
+                },
+                'specialties': {
+                    'create': currentSpecialtiesTitleList
+                }
+            })
+
+    datetimeNow: datetime = datetime.now()
+    index: int = 0
+
+    for title in STUDY_SUBJECT_SET:
+        commonExamCount: int = await prisma.exam.count()
+        index =+ 1
+
+        if commonExamCount == 0:
+            await prisma.exam.create(data = {
+                'conductingDate': datetimeNow + timedelta(days = 2),
+                'classroom': f'Т-{ index }'
+            })
+
+    for studyGroupTitle in STUDY_GROUPS_TITLE_SET:
+        existingStudyGroupData: Study_group | None = await prisma.study_group.find_unique(where = { 'title': studyGroupTitle })
+
+        if existingStudyGroupData == None:
+            currentExamIdsList: List[ExamWhereUniqueInput] = []
+
+            for examId in range(3):
+                currentExamIdsList.append({ 'id': examId })
+
+            await prisma.study_group.create(data = {
+                'title': title,
+                'exams': { 'connect': currentExamIdsList }
+            })

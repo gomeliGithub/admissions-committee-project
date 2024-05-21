@@ -10,101 +10,92 @@ generator client {
 }
 
 model Applicant {
-    id                    Int                               @id @default(autoincrement())
-    fullName              String
-    graduatedInstitutions Json
-    medal                 Boolean                           @default(false)
-    enrolled              Boolean                           @default(false)
-    study_group           Study_group?
-    examination_sheet     Examination_sheet?
-    department            Department                        @relation(fields: [departmentId], references: [id])
-    departmentId          Int
-    faculty               Faculty                           @relation(fields: [facultyId], references: [id])
-    facultyId             Int
+    id                       Int                               @id @default(autoincrement())
+    fullName                 String
+    graduatedInstitutions    Json
+    medal                    Boolean                           @default(false)
+    enrolled                 Boolean                           @default(false)
+    study_group              Study_group?
+    examination_sheet        Examination_sheet?
+    department               Department                        @relation(fields: [departmentId], references: [id])
+    departmentId             Int
+    faculty                  Faculty                           @relation(fields: [facultyId], references: [id])
+    facultyId                Int
 }
 
 model Study_group {
-    id                    Int                               @id @default(autoincrement())
-    title                 String                            @unique
-    applicant             Applicant                         @relation(fields: [applicantId], references: [id])
-    applicantId           Int                               @unique
-    exams                 Exam[]
+    id                       Int                               @id @default(autoincrement())
+    title                    String                            @unique
+    applicant                Applicant                         @relation(fields: [applicantId], references: [id])
+    applicantId              Int                               @unique
+    exams                    Exam[]
 }
 
 model Examination_sheet {
-    id                    Int                               @id @default(autoincrement())
-    applicant             Applicant                         @relation(fields: [applicantId], references: [id])
-    applicantId           Int                               @unique
-    study_subjects        Examination_sheet_study_subject[]
+    id                       Int                               @id @default(autoincrement())
+    russianLanguage          Int                               @default(0)
+    belarusianLanguage       Int                               @default(0) 
+    foreignLanguage          Int                               @default(0)
+    worldHistory             Int                               @default(0)
+    belarusHistory           Int                               @default(0)
+    greatPatrioticWarHistory Int                               @default(0)
+    socialStudies            Int                               @default(0)
+    socialScience            Int                               @default(0)
+    mathematics              Int                               @default(0)
+    applicant                Applicant                         @relation(fields: [applicantId], references: [id])
+    applicantId              Int                               @unique
 }
 
 model Department {
-    id                    Int                               @id @default(autoincrement())
-    title                 String
-    placesNumber          Int
-    passingScore          Int
-    studentsAreShortage   Boolean                           @default(false)
-    applicants            Applicant[]                    
-    faculty               Faculty                           @relation(fields: [facultyId], references: [id])
-    facultyId             Int
-    specialty             Specialty                         @relation(fields: [specialtyId], references: [id])
-    specialtyId           Int                               @unique
+    id                       Int                               @id @default(autoincrement())
+    title                    String                            @unique
+    placesNumber             Int                               @default(0)
+    passingScore             Int                               @default(0)
+    studentsAreShortage      Boolean                           @default(false)
+    applicants               Applicant[]                    
+    faculty                  Faculty                           @relation(fields: [facultyId], references: [id])
+    facultyId                Int
 }
 
 model Faculty {
-    id                    Int                               @id @default(autoincrement())
-    title                 String
-    passingScore          Int
-    applicants            Applicant[]   
-    departments           Department[]                    
-    specialty             Specialty                         @relation(fields: [specialtyId], references: [id])
-    specialtyId           Int                               @unique
+    id                       Int                               @id @default(autoincrement())
+    title                    String                            @unique
+    passingScore             Int                               @default(0)
+    applicants               Applicant[]   
+    departments              Department[]
+    specialties              Specialty[]       
 }
 
 model Exam {
-    id                    Int                               @id @default(autoincrement())
-    isConsultation        Boolean?                          @default(false)
-    conductingDate        DateTime
-    classroom             String
-    createDate            DateTime                          @default(now())
-    study_group           Study_group?                      @relation(fields: [study_groupId], references: [id])
-    study_groupId         Int?
-}
-
-model Study_subject {
-    id                    Int                               @id @default(autoincrement())
-    title                 String
-    score                 Int                               @default(0)
-    examination_sheets    Examination_sheet_study_subject[]
-}
-
-model Examination_sheet_study_subject {
-    id                    Int                               @id @default(autoincrement())
-    examination_sheet     Examination_sheet                 @relation(fields: [examination_sheetId], references: [id])
-    examination_sheetId   Int
-    study_subject         Study_subject                     @relation(fields: [study_subjectId], references: [id])
-    study_subjectId       Int
+    id                       Int                               @id @default(autoincrement())
+    isConsultation           Boolean                           @default(false)
+    conductingDate           DateTime
+    classroom                String
+    createDate               DateTime                          @default(now())
+    study_group              Study_group?                      @relation(fields: [study_groupId], references: [id])
+    study_groupId            Int?
 }
 
 model Specialty {
-    id                    Int                               @id @default(autoincrement())
-    passingScore          Int
-    competition           Int
-    faculty               Faculty?
-    department            Department?
+    id                       Int                               @id @default(autoincrement())
+    passingScore             Int                               @default(0)
+    competition              Int                               @default(0)
+    title                    String                            @unique
+    faculty                  Faculty?                          @relation(fields: [facultyId], references: [id])
+    facultyId                Int?
 }
 
 model Admissions_committee_secretary {
-    id                    Int                               @id @default(autoincrement())
-    login                 String                            @unique
-    password              String
-    lastSignInDate        DateTime?
+    id                       Int                               @id @default(autoincrement())
+    login                    String                            @unique
+    password                 String
+    lastSignInDate           DateTime?
 }
 
 model JWT_token {
-    jwt_hash              String                            @id
-    issued_date           DateTime                          @default(now())
-    expires_date          DateTime
-    revokation_date       DateTime
-    revoked               Boolean                           @default(false)
+    jwt_hash                 String                            @id
+    issued_date              DateTime                          @default(now())
+    expires_date             DateTime
+    revokation_date          DateTime
+    revoked                  Boolean                           @default(false)
 }

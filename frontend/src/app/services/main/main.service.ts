@@ -53,15 +53,15 @@ export class MainService {
     }
 
     public getFacultyData (): Observable<IFaculty[]> {
-        return this._http.get<IFaculty[]>(`${ this._apiURL }/exam/getFacultyData`, { withCredentials: true });
+        return this._http.get<IFaculty[]>(`${ this._apiURL }/study/getFacultyData`, { withCredentials: true });
     }
 
     public getDepartmentData (): Observable<IDepartment[]> {
-        return this._http.get<IDepartment[]>(`${ this._apiURL }/exam/getDepartmentData`, { withCredentials: true });
+        return this._http.get<IDepartment[]>(`${ this._apiURL }/study/getDepartmentData`, { withCredentials: true });
     }
 
     public getStudyGroupData (): Observable<IStudyGroup[]> {
-        return this._http.get<IStudyGroup[]>(`${ this._apiURL }/exam/getStudyGroupData`, { withCredentials: true });
+        return this._http.get<IStudyGroup[]>(`${ this._apiURL }/study/getStudyGroupData`, { withCredentials: true });
     }
 
     public createApplicant (applicantData: ICreateRequestApplicantData): Observable<void> {
