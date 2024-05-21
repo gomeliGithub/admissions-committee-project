@@ -118,11 +118,11 @@ async def createStudyData () -> None:
 
         if commonExamCount == 0:
             await prisma.exam.create(data = {
-                'conductingDate': datetimeNow + timedelta(days = index + 1),
-                'classroom': f'Т-{ index }'
+                'conductingDate': datetimeNow + timedelta(days = index + 2),
+                'classroom': f'Каб-{ index }'
             })
 
-    index = 1
+    index = 0
 
     for studyGroupTitle in STUDY_GROUPS_TITLE_SET:
         existingStudyGroupData: Study_group | None = await prisma.study_group.find_unique(where = { 'title': studyGroupTitle })
