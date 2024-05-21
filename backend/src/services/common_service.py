@@ -17,7 +17,6 @@ from ..config.config import settings
 from ..pydanticClasses.applicantData import Applicant_get_request_pydantic
 
 from ..services.applicant_service import ApplicantService
-from ..services.exam_service import ExamService
 
 
 class CommonService:
@@ -35,7 +34,7 @@ class CommonService:
         'samesite': 'strict'
     }
 
-    async def getAllData (self, applicantService: ApplicantService, examService: ExamService, applicantData: Applicant_get_request_pydantic) -> Dict[ str, Dict[str, List[Applicant] | bool] | List[int] | list[Dict[str, str | int]] | int ]:
+    async def getAllData (self, applicantService: ApplicantService, applicantData: Applicant_get_request_pydantic) -> Dict[ str, Dict[str, List[Applicant] | bool] | List[int] | list[Dict[str, str | int]] | int ]:
         applicantDataList: Dict[ str, List[ Applicant ] | bool ] = cast(Dict[ str, List[ Applicant ] | bool ], await applicantService.getApplicantData(applicantData))
         facultiesPassingScore: List[int] = [ passingScore for passingScore in map(lambda faculty: faculty.passingScore, await prisma.faculty.find_many(where = { 'passingScore': True })) ]
         departmentsPassingScore: List[int] = [ passingScore for passingScore in map(lambda department: department.passingScore, await prisma.department.find_many(where = { 'passingScore': True })) ]
