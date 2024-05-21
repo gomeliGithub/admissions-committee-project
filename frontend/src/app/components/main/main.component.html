@@ -74,7 +74,10 @@
 </div>
 <div class="w-100">
     <div ngbAccordion class="align-self-center my-3 w-50 mx-auto" id="uploadImageAccordion">
-        <div ngbAccordionItem [collapsed]="createApplicantFormAccordionIsCollapsed">
+        <div ngbAccordionItem [collapsed]="createApplicantFormAccordionIsCollapsed" 
+            (hide)="createApplicantFormAccordionIsCollapsed = true"
+            (show)="createApplicantFormAccordionIsCollapsed = false"
+        >
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>Зарегистрировать абитуриента</button>
             </h2>
