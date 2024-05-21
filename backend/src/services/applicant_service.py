@@ -1,13 +1,13 @@
 from typing import (
     Dict, 
-    List,
-    cast
+    List
 )
 
 from prisma import Json
 from prisma.models import Applicant
 from prisma.types import (
     ApplicantWhereInput,
+    ApplicantCreateInput,
     ApplicantUpdateInput
 )
 from src.prisma import prisma
@@ -72,14 +72,17 @@ class ApplicantService:
 
 
     async def createApplicant (self, applicantData: Applicant_create_request_pydantic) -> None:
-        await prisma.applicant.create(data = {
+        createData: ApplicantCreateInput = {
             'fullName': applicantData.fullName,
             'graduatedInstitutions': Json(applicantData.graduatedInstitutions),
-            'medal': cast(bool, applicantData.medal),
             'department': { 'connect': { 'id': applicantData.departmentId } },
             'faculty': { 'connect': { 'id': applicantData.facultyId } },
             'study_group': { 'connect': { 'id': applicantData.studyGroupId } }
-        })
+        }
+
+        if applicantData.medal != None: createData['medal'] = applicantData.medal
+
+        await prisma.applicant.create(data = createData)
 
 
     async def updateApplicant (self, applicantData: Applicant_update_request_pydantic) -> None:
