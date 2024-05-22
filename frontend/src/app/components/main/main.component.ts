@@ -49,10 +49,7 @@ export class MainComponent implements OnInit {
     ) {
         this.activeClientData = this._appService.activeClientData;
 
-        this.getApplicantList().subscribe({
-            next: data => !data.nextApplicantsIsExists ? this.applicantList = data.applicantList : this.applicantList.push(...data.applicantList),
-            error: () => this._appService.createAndAddErrorAlert()
-        });
+        this.getApplicantList();
 
         this.getFacultyData().subscribe({
             next: data => {
@@ -116,13 +113,16 @@ export class MainComponent implements OnInit {
 
     ngOnInit (): void { }
 
-    public getApplicantList (): Observable<IGetResponseApplicantData> {
-        return this._mainService.getApplicantList({
+    public getApplicantList (): void {
+        this._mainService.getApplicantList({
             limitCount: 5,
             offsetCount: this.applicantList.length,
             includeFacultyData: true,
             includeDepartmentData: true,
             includeStudyGroupData: true
+        }).subscribe({
+            next: data => !data.nextApplicantsIsExists ? this.applicantList = data.applicantList : this.applicantList.push(...data.applicantList),
+            error: () => this._appService.createAndAddErrorAlert()
         });
     }
 
@@ -162,6 +162,8 @@ export class MainComponent implements OnInit {
                 this.createApplicantFormAccordionIsCollapsed = true;
 
                 this._appService.createAndAddSuccessAlert("Абитуриент успешно зарегистрирован");
+
+                this.getApplicantList();
             },
             error: () => this._appService.createAndAddErrorAlert()
         });
