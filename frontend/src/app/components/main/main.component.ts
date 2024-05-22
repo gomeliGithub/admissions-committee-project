@@ -103,7 +103,7 @@ export class MainComponent implements OnInit {
             medal?: FormControl<boolean | null>;
         } = {
             'fullName': new FormControl(null, Validators.required),
-            'graduatedInstitutions': new FormControl(null,[ Validators.required, Validators.pattern(', ') ]),
+            'graduatedInstitutions': new FormControl(null, Validators.required),
             'faculty': new FormControl(null, Validators.required),
             'department': new FormControl(null, Validators.required),
             'studyGroup': new FormControl(null, Validators.required),
