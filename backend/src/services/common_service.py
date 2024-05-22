@@ -30,7 +30,7 @@ class CommonService:
         'path': '/',
         'domain': None,
         'secure': False,
-        'httponly': False,
+        'httponly': True,
         'samesite': 'strict'
     }
 
