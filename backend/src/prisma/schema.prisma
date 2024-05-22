@@ -16,7 +16,7 @@ model Applicant {
     medal                    Boolean                           @default(false)
     enrolled                 Boolean                           @default(false)
     createDate               DateTime                          @default(now())
-    updateDate               DateTime
+    updateDate               DateTime?
     study_group              Study_group?
     examination_sheet        Examination_sheet?
     department               Department                        @relation(fields: [departmentId], references: [id])

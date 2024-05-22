@@ -76,7 +76,7 @@ class SignService:
 
                 jwtPayload['__secure_fgpHash'] = __secure_fgpData['__secure_fgpHash']
 
-                await prisma.admissions_committee_secretary.update({ 'lastSignInDate': datetime.fromtimestamp(time.time()) }, where = {
+                await prisma.admissions_committee_secretary.update({ 'lastSignInDate': datetime.fromtimestamp(time.time(), timezone.utc) }, where = {
                     'id': existingSecretaryData.id
                 })
 

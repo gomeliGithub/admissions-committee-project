@@ -93,7 +93,6 @@ class ApplicantService:
         createData: ApplicantCreateInput = {
             'fullName': applicantData.fullName,
             'graduatedInstitutions': cast(Json, json.dumps(applicantData.graduatedInstitutions)),
-            'updateDate': datetime.fromtimestamp(time.time()),
             'examination_sheet': {
                 'create': { }
             },
