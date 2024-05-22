@@ -2,8 +2,10 @@ from typing import (
     Dict,
     cast
 )
+import time
 from datetime import (
-    datetime, 
+    datetime,
+    timezone,
     timedelta
 )
 import hashlib
@@ -74,7 +76,7 @@ class SignService:
 
                 jwtPayload['__secure_fgpHash'] = __secure_fgpData['__secure_fgpHash']
 
-                await prisma.admissions_committee_secretary.update({ 'lastSignInDate': datetime.now() }, where = {
+                await prisma.admissions_committee_secretary.update({ 'lastSignInDate': datetime.fromtimestamp(time.time()) }, where = {
                     'id': existingSecretaryData.id
                 })
 
@@ -110,7 +112,7 @@ class SignService:
 
         JWT_EXPIRESIN_TIME: str = settings['JWT_EXPIRESIN_TIME']
 
-        expires_date: datetime = datetime.now() + timedelta(milliseconds = ms.parse_time(JWT_EXPIRESIN_TIME))
+        expires_date: datetime = datetime.fromtimestamp(time.time(), timezone.utc) + timedelta(milliseconds = ms.parse_time(JWT_EXPIRESIN_TIME))
 
         await prisma.jwt_token.create(data = { 
             'jwt_hash': jwt_hash,
@@ -125,7 +127,7 @@ class SignService:
         if revokedJWTData == None:
             jwt_hash: str = hashlib.sha256(jwt.encode('utf-8')).hexdigest()
 
-            revokation_date: datetime = datetime.now()
+            revokation_date: datetime = datetime.fromtimestamp(time.time(), timezone.utc)
 
             await prisma.jwt_token.update(where = { 'jwt_hash': jwt_hash }, 
                 data = {

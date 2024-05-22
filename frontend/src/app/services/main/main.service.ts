@@ -29,18 +29,21 @@ export class MainService {
         if ( applicantData.ids ) params = params.append('ids', JSON.stringify(applicantData.ids))
         if ( applicantData.graduatedInstitutions ) params = params.append('graduatedInstitutions', JSON.stringify(applicantData.graduatedInstitutions))
         if ( applicantData.enrolled ) params = params.append('enrolled', applicantData.enrolled)
-        if ( applicantData.departmentId ) params = params.append('departmentId', applicantData.departmentId)
         if ( applicantData.facultyId ) params = params.append('facultyId', applicantData.facultyId)
+        if ( applicantData.departmentId ) params = params.append('departmentId', applicantData.departmentId)
         if ( applicantData.studyGroupId ) params = params.append('studyGroupId', applicantData.studyGroupId)
-
+        if ( applicantData.includeFacultyData ) params = params.append('includeFacultyData', applicantData.includeFacultyData)
+        if ( applicantData.includeDepartmentData ) params = params.append('includeDepartmentData', applicantData.includeDepartmentData)
+        if ( applicantData.includeStudyGroupData ) params = params.append('includeStudyGroupData', applicantData.includeStudyGroupData)
+        
         return this._http.get<IGetResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params }).pipe(map(applicantData => {
             applicantData.applicantList.forEach(item => {
-                if ( item.graduatedInstitutions ) {
-                    const parsedGraduatedInstitutions: string[] = JSON.parse(item.graduatedInstitutions);
-
-                    item.graduatedInstitutions = parsedGraduatedInstitutions.join(', ');
-                }
+                Object.keys(item).forEach(field => {
+                    if ( field === 'medal' ) item[field] = item[field] === true ? "Да" : "Нет";
+                    if ( field === 'enrolled' ) item[field] = item[field] === true ? "Да" : "Нет";
+                });
             });
+
 
 
 

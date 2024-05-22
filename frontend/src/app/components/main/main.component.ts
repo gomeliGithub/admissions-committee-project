@@ -103,7 +103,7 @@ export class MainComponent implements OnInit {
             medal?: FormControl<boolean | null>;
         } = {
             'fullName': new FormControl(null, Validators.required),
-            'graduatedInstitutions': new FormControl(null, Validators.required),
+            'graduatedInstitutions': new FormControl(null,[ Validators.required, Validators.pattern(', ') ]),
             'faculty': new FormControl(null, Validators.required),
             'department': new FormControl(null, Validators.required),
             'studyGroup': new FormControl(null, Validators.required),
@@ -119,7 +119,10 @@ export class MainComponent implements OnInit {
     public getApplicantList (): Observable<IGetResponseApplicantData> {
         return this._mainService.getApplicantList({
             limitCount: 5,
-            offsetCount: this.applicantList.length
+            offsetCount: this.applicantList.length,
+            includeFacultyData: true,
+            includeDepartmentData: true,
+            includeStudyGroupData: true
         });
     }
 
@@ -146,7 +149,7 @@ export class MainComponent implements OnInit {
         
         const applicantData: ICreateRequestApplicantData = {
             fullName: createApplicantFormValue.fullName as string,
-            graduatedInstitutions: createApplicantFormValue.graduatedInstitutions?.split(/[\s,]+/) as string[],
+            graduatedInstitutions: createApplicantFormValue.graduatedInstitutions?.split(', ') as string[],
             facultyId: this.facultyList.find(facultyData => facultyData.title === createApplicantFormValue.faculty as string)?.id as number,
             departmentId: this.departmentList.find(departmentData => departmentData.title === createApplicantFormValue.department as string)?.id as number,
             studyGroupId: this.studyGroupList.find(studyGroupData => studyGroupData.title === createApplicantFormValue.studyGroup as string)?.id as number,

@@ -14,12 +14,15 @@ from prisma.models import Applicant
 class Applicant_get_request_pydantic (BaseModel):
     ids: list[int] | None = Field(Query(default = None))
     graduatedInstitutions: list[str] | None = Field(Query(default = None))
-    enrolled: bool | None = Field(Query(default = None))
-    departmentId: int | None = Field(Query(default = None, gt = 0))
+    enrolled: bool | None = Field(Query(default = False))
     facultyId: int | None = Field(Query(default = None, gt = 0))
+    departmentId: int | None = Field(Query(default = None, gt = 0))
     studyGroupId: int | None = Field(Query(default = None, ge = 3))
-    limitCount: int = Field(Query(default = 4, gt = 4))
-    offsetCount: int = Field(Query(default = 0, ge = 0))
+    includeFacultyData: bool | None = Field(Query(default = False))
+    includeDepartmentData: bool | None = Field(Query(default = False))
+    includeStudyGroupData: bool | None = Field(Query(default = False))
+    limitCount: int = Field(Query(gt = 4))
+    offsetCount: int = Field(Query(ge = 0))
 
 
     @field_validator('ids')
@@ -32,7 +35,6 @@ class Applicant_get_request_pydantic (BaseModel):
     @classmethod
     def ensure_graduatedInstitutions_length (cls, value: str | None) -> list[int | str] | None:
         return listLengthValidator(value, 1)
-
 
 
 class Applicant_create_request_pydantic (BaseModel):

@@ -39,7 +39,7 @@
 </div>
 <div class="">
     <ng-template [ngIf]="applicantList.length !== 0" [ngIfElse]="applicantListEmptyBlock">
-        <table class="table table-striped">
+        <table class="table table-striped text-center">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -57,11 +57,11 @@
                     <th scope="row">{{ i + 1 }}</th>
                     <td>{{ applicantData.fullName }}</td>
                     <td>{{ applicantData.graduatedInstitutions }}</td>
-                    <td>{{ applicantData.medal }}</td>
-                    <td>{{ applicantData.enrolled }}</td>
-                    <td>{{ applicantData.faculty }}</td>
-                    <td>{{ applicantData.department }}</td>
-                    <td>{{ applicantData.studyGroup }}</td>
+                    <td class="fw-bold">{{ applicantData.medal }}</td>
+                    <td class="fw-bold">{{ applicantData.enrolled }}</td>
+                    <td>{{ applicantData.faculty.title }}</td>
+                    <td>{{ applicantData.department.title }}</td>
+                    <td>{{ applicantData.studyGroup.title }}</td>
                 </tr>
             </tbody>
         </table>

@@ -5,11 +5,14 @@ from typing import (
 )
 
 import json
+import time
+from datetime import datetime
 
 from prisma import Json
 from prisma.models import Applicant
 from prisma.types import (
     ApplicantWhereInput,
+    ApplicantInclude,
     ApplicantCreateInput,
     ApplicantUpdateInput
 )
@@ -28,8 +31,17 @@ class ApplicantService:
 
 
     async def getApplicantData (self, applicantData: Applicant_get_request_pydantic) -> Dict[ str, List[ Applicant ] | bool ] | List[ Applicant | None ]:
+        includeParams: ApplicantInclude = { }
+
+        if applicantData.includeFacultyData != None: includeParams['faculty'] = applicantData.includeFacultyData
+        if applicantData.includeDepartmentData != None: includeParams['department'] = applicantData.includeDepartmentData
+        if applicantData.includeStudyGroupData != None: includeParams['study_group'] = applicantData.includeStudyGroupData
+
         if applicantData.ids != None and len(applicantData.ids) == 1:
-            applicantSingleData: Applicant | None = await prisma.applicant.find_unique(where = { 'id': applicantData.ids[0] })
+            applicantSingleData: Applicant | None = await prisma.applicant.find_unique(
+                where = { 'id': applicantData.ids[0] }, 
+                include = includeParams
+            )
 
             return [ applicantSingleData ]
         else:
@@ -39,16 +51,16 @@ class ApplicantService:
             if applicantData.graduatedInstitutions != None: whereParams['graduatedInstitutions'] = cast(Json, json.dumps(applicantData.graduatedInstitutions))
             if applicantData.enrolled != None: whereParams['enrolled'] = applicantData.enrolled
 
-            if applicantData.departmentId != None or applicantData.facultyId != None or applicantData.studyGroupId != None:
-                if applicantData.departmentId != None: whereParams['department'] = { 
-                    'is': { 
-                        'id': applicantData.departmentId 
-                    }
-                }
-                    
+            if applicantData.departmentId != None or applicantData.facultyId != None or applicantData.studyGroupId != None:  
                 if applicantData.facultyId != None: whereParams['faculty'] = { 
                     'is': { 
                         'id': applicantData.facultyId 
+                    }
+                }
+                    
+                if applicantData.departmentId != None: whereParams['department'] = { 
+                    'is': { 
+                        'id': applicantData.departmentId 
                     }
                 }
                     
@@ -58,9 +70,13 @@ class ApplicantService:
                     }
                 }
                     
-            applicantDataList: List[Applicant] = await prisma.applicant.find_many(where = whereParams, skip = applicantData.offsetCount, take = applicantData.limitCount)
+            applicantDataList: List[Applicant] = await prisma.applicant.find_many(
+                where = whereParams, 
+                include = includeParams, 
+                skip = applicantData.offsetCount, 
+                take = applicantData.limitCount
+            )
             commonApplicantCount: int | None = await prisma.applicant.count()
-
 
             nextApplicantsIsExists: bool = False
 
@@ -77,6 +93,10 @@ class ApplicantService:
         createData: ApplicantCreateInput = {
             'fullName': applicantData.fullName,
             'graduatedInstitutions': cast(Json, json.dumps(applicantData.graduatedInstitutions)),
+            'updateDate': datetime.fromtimestamp(time.time()),
+            'examination_sheet': {
+                'create': { }
+            },
             'department': { 'connect': { 'id': applicantData.departmentId } },
             'faculty': { 'connect': { 'id': applicantData.facultyId } },
             'study_group': { 'connect': { 'id': applicantData.studyGroupId } }

@@ -13,9 +13,12 @@ export interface IGetRequestApplicantData {
 	ids?: number[];
     graduatedInstitutions?: string[];
     enrolled?: boolean;
-    departmentId?: number;
     facultyId?: number;
+    departmentId?: number;
     studyGroupId?: number;
+    includeFacultyData?: boolean;
+    includeDepartmentData?: boolean;
+    includeStudyGroupData?: boolean;
     limitCount: number;
     offsetCount: number;
 }
