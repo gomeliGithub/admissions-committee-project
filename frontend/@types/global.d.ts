@@ -1,3 +1,5 @@
+import { IApplicant } from 'types/models.d';
+
 export interface IActiveClientData {
     login: string;
     lastSignInDate: Date;

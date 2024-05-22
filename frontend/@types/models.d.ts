@@ -4,8 +4,8 @@ export interface IApplicant {
     graduatedInstitutions: string;
     medal: boolean;
     enrolled: boolean;
-    studyGroup: IStudyGroup;
-    examinationSheet: IExaminationSheet;
+    study_group: IStudyGroup;
+    examination_sheet: IExaminationSheet;
     department: IDepartment;
     faculty: IFaculty;
 }

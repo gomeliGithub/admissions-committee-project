@@ -23,8 +23,8 @@ export class MainService {
     public getApplicantList (applicantData: IGetRequestApplicantData): Observable<IGetResponseApplicantData> {
         let params: HttpParams = new HttpParams();
 
-        params = params.append('limitCount', applicantData.limitCount)
-        params = params.append('offsetCount', applicantData.offsetCount)
+        params = params.append('limitCount', applicantData.limitCount);
+        params = params.append('offsetCount', applicantData.offsetCount);
 
         if ( applicantData.ids ) params = params.append('ids', JSON.stringify(applicantData.ids))
         if ( applicantData.graduatedInstitutions ) params = params.append('graduatedInstitutions', JSON.stringify(applicantData.graduatedInstitutions))
@@ -37,18 +37,9 @@ export class MainService {
         if ( applicantData.includeStudyGroupData ) params = params.append('includeStudyGroupData', applicantData.includeStudyGroupData)
         
         return this._http.get<IGetResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params }).pipe(map(applicantData => {
-            applicantData.applicantList.forEach(item => {
-                Object.keys(item).forEach(field => {
-                    if ( field === 'medal' ) item[field] = item[field] === true ? "Да" : "Нет";
-                    if ( field === 'enrolled' ) item[field] = item[field] === true ? "Да" : "Нет";
-                });
-            });
-
-
 
 
             console.log(applicantData);
-
 
 
             return applicantData;

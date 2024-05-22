@@ -5,16 +5,18 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Observable } from 'rxjs';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { PipesModule } from '../../modules/pipes/pipes.module';
+
 import { AppService } from '../../app.service';
 import { MainService } from '../../services/main/main.service';
 
-import { IActiveClientData, ICreateRequestApplicantData, IGetResponseApplicantData } from 'types/global';
+import { IActiveClientData, ICreateRequestApplicantData } from 'types/global';
 import { IApplicant, IDepartment, IFaculty, IStudyGroup } from 'types/models';
 
 @Component({
     selector: 'app-main',
     standalone: true,
-    imports: [ CommonModule, ReactiveFormsModule, NgbModule ],
+    imports: [ CommonModule, ReactiveFormsModule, NgbModule, PipesModule ],
     templateUrl: './main.component.html',
     styleUrl: './main.component.css'
 })
