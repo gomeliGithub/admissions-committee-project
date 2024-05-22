@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class BooleanPipe implements PipeTransform {
     constructor () { }
     
-    transform (value: number): string {
+    transform (value: boolean): string {
         return Boolean(value) === true ? "Да" : "Нет";
     }
 }
