@@ -5,7 +5,7 @@ import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
-import { ICreateRequestApplicantData, IGetRequestApplicantData, IGetResponseApplicantData } from 'types/global';
+import { ICreateRequestApplicantData, IGetRequestApplicantData, IGetResponseApplicantData, IUpdateRequestApplicantData } from 'types/global';
 import { IDepartment, IFaculty, IStudyGroup } from 'types/models';
 
 @Injectable({
@@ -36,14 +36,7 @@ export class MainService {
         if ( applicantData.includeDepartmentData ) params = params.append('includeDepartmentData', applicantData.includeDepartmentData)
         if ( applicantData.includeStudyGroupData ) params = params.append('includeStudyGroupData', applicantData.includeStudyGroupData)
         
-        return this._http.get<IGetResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params }).pipe(map(applicantData => {
-
-
-            console.log(applicantData);
-
-
-            return applicantData;
-        }));
+        return this._http.get<IGetResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params });
     }
 
     public getFacultyData (): Observable<IFaculty[]> {
@@ -60,5 +53,9 @@ export class MainService {
 
     public createApplicant (applicantData: ICreateRequestApplicantData): Observable<void> {
         return this._http.post<void>(`${ this._apiURL }/applicant/createApplicant`, applicantData, { withCredentials: true });
+    }
+
+    public updateApplicant (applicantData: IUpdateRequestApplicantData): Observable<void> {
+        return this._http.put<void>(`${ this._apiURL }/applicant/updateApplicant`, applicantData, { withCredentials: true });
     }
 }

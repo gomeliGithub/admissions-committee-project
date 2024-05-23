@@ -14,13 +14,13 @@ from prisma.models import Applicant
 class Applicant_get_request_pydantic (BaseModel):
     ids: list[int] | None = Field(Query(default = None))
     graduatedInstitutions: list[str] | None = Field(Query(default = None))
-    enrolled: bool | None = Field(Query(default = False))
+    enrolled: bool = Field(Query(default = False))
     facultyId: int | None = Field(Query(default = None, gt = 0))
     departmentId: int | None = Field(Query(default = None, gt = 0))
-    studyGroupId: int | None = Field(Query(default = None, ge = 3))
-    includeFacultyData: bool | None = Field(Query(default = False))
-    includeDepartmentData: bool | None = Field(Query(default = False))
-    includeStudyGroupData: bool | None = Field(Query(default = False))
+    studyGroupId: int | None = Field(Query(default = None, gt = 0))
+    includeFacultyData: bool = Field(Query(default = False))
+    includeDepartmentData: bool = Field(Query(default = False))
+    includeStudyGroupData: bool = Field(Query(default = False))
     limitCount: int = Field(Query(gt = 4))
     offsetCount: int = Field(Query(ge = 0))
 
@@ -54,12 +54,12 @@ class Applicant_create_request_pydantic (BaseModel):
 class Applicant_update_request_pydantic (BaseModel):
     id: int = Field(ge = 1)
     fullName: str | None = Field(default = None, min_length = 10)
-    graduatedInstitutions: list[str] | None = Field()
-    medal: bool | None = Field(default = None, min_length = 5)
-    departmentId: int | None = Field(default = None, gt = 0)
-    facultyId: int | None = Field(default = None, gt = 0)
-    studyGroupId: int | None = Field(default = None, ge = 3)
+    graduatedInstitutions: list[str] | None = Field(default = None)
+    medal: bool | None = Field(default = None)
     enrolled: bool | None = Field(default = None)
+    facultyId: int | None = Field(default = None, gt = 0)
+    departmentId: int | None = Field(default = None, gt = 0)
+    studyGroupId: int | None = Field(default = None, ge = 3)
 
 
     @field_validator('graduatedInstitutions')

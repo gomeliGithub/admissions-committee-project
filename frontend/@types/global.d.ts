@@ -25,6 +25,12 @@ export interface IGetRequestApplicantData {
     offsetCount: number;
 }
 
+export interface IGetRequestOptionalApplicantData {
+    facultyId?: number;
+    departmentId?: number;
+    studyGroupId?: number;
+}
+
 export interface IGetResponseApplicantData {
     applicantList: IApplicant[];
     nextApplicantsIsExists: boolean;
@@ -37,4 +43,25 @@ export interface ICreateRequestApplicantData {
     facultyId: number;
     studyGroupId: number;
     medal?: boolean;
+}
+
+export interface IUpdateRequestApplicantData {
+    id: number;
+    fullName?: string;
+    graduatedInstitutions?: string[];
+    medal?: boolean;
+    enrolled?: boolean;
+    facultyId?: number;
+    departmentId?: number;
+    studyGroupId?: number;
+}
+
+export interface IUpdateApplicantFormDefaultData {
+    fullName: string;
+    graduatedInstitutions: string;
+    medal: boolean;
+    enrolled: boolean;
+    faculty: string;
+    department: string;
+    studyGroup: string;
 }

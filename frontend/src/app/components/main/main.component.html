@@ -1,4 +1,4 @@
-<div *ngIf="applicantList.length !== 0" class="">
+<div class="">
     <form [formGroup]="applicantSearchForm" novalidate (ngSubmit)="applicantSearchFormSubmit()">
         <div class="row mb-3">
             <label for="inputFaculty" class="col-sm-2 col-form-label">Факультет</label>
@@ -39,32 +39,83 @@
 </div>
 <div class="">
     <ng-template [ngIf]="applicantList.length !== 0" [ngIfElse]="applicantListEmptyBlock">
-        <table class="table table-striped text-center">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Имя</th>
-                    <th scope="col">Оконченные учебные заведения</th>
-                    <th scope="col">Медалист</th>
-                    <th scope="col">Зачислен</th>
-                    <th scope="col">Факультет</th>
-                    <th scope="col">Кафедра</th>
-                    <th scope="col">Группа</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let applicantData of applicantList; let i = index">
-                    <th scope="row">{{ i + 1 }}</th>
-                    <td>{{ applicantData.fullName }}</td>
-                    <td>{{ applicantData.graduatedInstitutions }}</td>
-                    <td class="fw-bold">{{ applicantData.medal | boolean }}</td>
-                    <td class="fw-bold">{{ applicantData.enrolled | boolean }}</td>
-                    <td>{{ applicantData.faculty.title }}</td>
-                    <td>{{ applicantData.department.title }}</td>
-                    <td>{{ applicantData.study_group.title }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <form [formGroup]="updateApplicantForm" novalidate (ngSubmit)="updateApplicantFormSubmit()">
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Имя</th>
+                            <th scope="col">Оконченные учебные заведения</th>
+                            <th scope="col">Медалист</th>
+                            <th scope="col">Зачислен</th>
+                            <th scope="col">Факультет</th>
+                            <th scope="col">Кафедра</th>
+                            <th scope="col">Группа</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="applicants">
+                        <tr *ngFor="let applicantData of applicantList; let i = index" [formGroupName]="i">
+                            <ng-container formGroupName="fields">
+                                <th scope="row">{{ i + 1 }}</th>
+                                <td>
+                                    <input type="text" class="form-control" [id]="'inputUpdateFullName_' + i" formControlName="fullName" 
+                                        (change)="updateApplicantFormControlChange(i, updateApplicantForm.controls.applicants.at(i))"
+                                    >
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" [id]="'inputUpdateGraduatedInstitutions_' + i" formControlName="graduatedInstitutions" 
+                                        (change)="updateApplicantFormControlChange(i, updateApplicantForm.controls.applicants.at(i))"
+                                    >
+                                </td>
+                                <td class="fw-bold">
+                                    <input type="checkbox" role="switch" class="form-check-input" [id]="'inputUpdateMedal_' + i" formControlName="medal" 
+                                        (change)="updateApplicantFormControlChange(i, updateApplicantForm.controls.applicants.at(i))"
+                                    >
+                                </td>
+                                <td class="fw-bold">
+                                    <input type="checkbox" role="switch" class="form-check-input" [id]="'inputUpdateEnrolled_' + i" formControlName="enrolled" 
+                                        (change)="updateApplicantFormControlChange(i, updateApplicantForm.controls.applicants.at(i))"
+                                    >
+                                </td>
+                                <td>
+                                    <select class="form-select" [id]="'inputUpdateFaculty_' + i" formControlName="faculty" 
+                                        (change)="updateApplicantFormControlChange(i, updateApplicantForm.controls.applicants.at(i))"
+                                    >
+                                        <option *ngFor="let facultyData of facultyList" [selected]="facultyData.title === applicantData.faculty.title">
+                                            {{ facultyData.title }}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-select" [id]="'inputUpdateDepartment' + + i" formControlName="department" 
+                                        (change)="updateApplicantFormControlChange(i, updateApplicantForm.controls.applicants.at(i))"
+                                    >
+                                        <option *ngFor="let departmentData of departmentList" [selected]="departmentData.title === applicantData.department.title">
+                                            {{ departmentData.title }}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-select" [id]="'inputUpdateStudyGroup_' + i" formControlName="studyGroup" 
+                                        (change)="updateApplicantFormControlChange(i, updateApplicantForm.controls.applicants.at(i))"
+                                    >
+                                        <option *ngFor="let studyGroupData of studyGroupList" [selected]="studyGroupData.title === applicantData.study_group.title">
+                                            {{ studyGroupData.title }}
+                                        </option>
+                                    </select>
+                                </td>
+                            </ng-container>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center">
+                    <button [disabled]="updateApplicantForm.invalid" [hidden]="updateApplicantFormSubmitBtnIsHidden" class="btn btn-warning">
+                        Сохранить изменения
+                    </button>
+                </div>
+            </form>
+        </div>
     </ng-template>
     <ng-template #applicantListEmptyBlock>
         <div class="fs-3 fw-semibold text-center">
