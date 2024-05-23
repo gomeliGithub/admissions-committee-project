@@ -4,7 +4,8 @@
             <label for="inputFaculty" class="col-sm-2 col-form-label">Факультет</label>
             <div class="col-sm-10">
                 <select class="form-select" id="inputFaculty" formControlName="faculty">
-                    <option *ngFor="let facultyData of facultyList; let isFirst = first" [selected]="isFirst">
+                    <option selected></option>
+                    <option *ngFor="let facultyData of facultyList">
                         {{ facultyData.title }}
                     </option>
                 </select>
@@ -14,7 +15,8 @@
             <label for="inputDepartment" class="col-sm-2 col-form-label">Кафедра</label>
             <div class="col-sm-10">
                 <select class="form-select" id="inputDepartment" formControlName="department">
-                    <option *ngFor="let departmentData of departmentList; let isFirst = first" [selected]="isFirst">
+                    <option selected></option>
+                    <option *ngFor="let departmentData of departmentList">
                         {{ departmentData.title }}
                     </option>
                 </select>
@@ -24,15 +26,19 @@
             <label for="inputStudyGroup" class="col-sm-2 col-form-label">Группа</label>
             <div class="col-sm-10">
                 <select class="form-select" id="inputStudyGroup" formControlName="studyGroup">
-                    <option *ngFor="let studyGroupData of studyGroupList; let isFirst = first" [selected]="isFirst">
+                    <option selected></option>
+                    <option *ngFor="let studyGroupData of studyGroupList">
                         {{ studyGroupData.title }}
                     </option>
                 </select>
             </div>
         </div>
         <div class="mb-3 text-center">
-            <button [disabled]="applicantSearchForm.invalid" class="btn btn-info">
+            <button [disabled]="applicantSearchForm.invalid" class="btn btn-info me-2">
                 Найти
+            </button>
+            <button type="button" class="btn btn-warning" (click)="applicantSearchFormReset()">
+                Очистить
             </button>
         </div>
     </form>

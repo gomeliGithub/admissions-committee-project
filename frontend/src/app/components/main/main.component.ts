@@ -72,32 +72,17 @@ export class MainComponent implements OnInit {
         this.getApplicantList();
 
         this.getFacultyData().subscribe({
-            next: data => {
-                this.facultyList = data;
-
-                this.applicantSearchForm.controls['faculty'].setValue(this.facultyList.length !== 0 ? this.facultyList[0].title : null);
-                this.createApplicantForm.controls['faculty'].setValue(this.facultyList.length !== 0 ? this.facultyList[0].title : null);
-            },
+            next: data => this.facultyList = data,
             error: () => this._appService.createAndAddErrorAlert()
         });
 
         this.getDepartmentData().subscribe({
-            next: data => {
-                this.departmentList = data;
-
-                this.applicantSearchForm.controls['department'].setValue(this.departmentList.length !== 0 ? this.departmentList[0].title : null);
-                this.createApplicantForm.controls['department'].setValue(this.departmentList.length !== 0 ? this.departmentList[0].title : null);
-            },
+            next: data => this.departmentList = data,
             error: () => this._appService.createAndAddErrorAlert()
         });
 
         this.getStudyGroupData().subscribe({
-            next: data => {
-                this.studyGroupList = data;
-
-                this.applicantSearchForm.controls['studyGroup'].setValue(this.studyGroupList.length !== 0 ? this.studyGroupList[0].title : null);
-                this.createApplicantForm.controls['studyGroup'].setValue(this.studyGroupList.length !== 0 ? this.studyGroupList[0].title : null);
-            },
+            next: data => this.studyGroupList = data,
             error: () => this._appService.createAndAddErrorAlert()
         });
 
@@ -106,9 +91,9 @@ export class MainComponent implements OnInit {
             department: FormControl<string | null>;
             studyGroup: FormControl<string | null>;
         } = {
-            'faculty': new FormControl(null, Validators.required),
-            'department': new FormControl(null, Validators.required),
-            'studyGroup': new FormControl(null, Validators.required)
+            'faculty': new FormControl(null),
+            'department': new FormControl(null),
+            'studyGroup': new FormControl(null)
         };
 
         const createApplicantFormControls: {
@@ -273,6 +258,10 @@ export class MainComponent implements OnInit {
             departmentId: this.departmentList.find(departmentData => departmentData.title === applicantSearchFormValue.department as string)?.id as number,
             studyGroupId: this.studyGroupList.find(studyGroupData => studyGroupData.title === applicantSearchFormValue.studyGroup as string)?.id as number
         });
+    }
+
+    public applicantSearchFormReset (): void {
+        this.applicantSearchForm.reset();
     }
 
     public createApplicantFormSubmit (): void {
