@@ -176,7 +176,7 @@ export class MainComponent implements OnInit {
         }
 
         this._mainService.getApplicantList(applicantGetData).subscribe({
-            next: data => { debugger
+            next: data => {
                 if ( !data.nextApplicantsIsExists ) {
                     this.applicantList = data.applicantList;
 
