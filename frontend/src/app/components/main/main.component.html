@@ -283,3 +283,14 @@
         </tbody>
     </table>
 </div>
+<div class="align-self-start fs-5">
+    <span>Кафедры по которым был недобор студентов - </span>
+    <ul *ngIf="studentsAreShortageDepartmentDataList.length !== 0; else emptyBlock" class="list-unstyled">
+        <li *ngFor="let data of studentsAreShortageDepartmentDataList">
+            {{ data.title }}
+        </li>
+    </ul>
+    <ng-template #emptyBlock>
+        <span class="fw-semibold">Отсутствуют</span>
+    </ng-template>
+</div>

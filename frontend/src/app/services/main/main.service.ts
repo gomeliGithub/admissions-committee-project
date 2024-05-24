@@ -75,4 +75,10 @@ export class MainService {
     public updateExam (examData: IUpdateRequestExamData): Observable<void> {
         return this._http.put<void>(`${ this._apiURL }/study/updateExam`, examData, { withCredentials: true });
     }
+
+    public getStudentsAreShortageData (data: IDepartment[]): IDepartment[] {
+        const sorted: IDepartment[] = data.filter(data => data.studentsAreShortage);
+
+        return sorted;
+    }
 }

@@ -79,6 +79,8 @@ export class MainComponent implements OnInit {
     public currentExamDataIndex: number;
     public updateExamFormSubmitIsHidden: boolean = true;
 
+    public studentsAreShortageDepartmentDataList: IDepartment[] = [];
+
     constructor (
         private readonly _appService: AppService,
         private readonly _mainService: MainService
@@ -93,7 +95,11 @@ export class MainComponent implements OnInit {
         });
 
         this.getDepartmentData().subscribe({
-            next: data => this.departmentList = data,
+            next: data => {
+                this.departmentList = data;
+
+                this.studentsAreShortageDepartmentDataList = this._mainService.getStudentsAreShortageData(data);
+            },
             error: () => this._appService.createAndAddErrorAlert()
         });
 
@@ -175,7 +181,7 @@ export class MainComponent implements OnInit {
     }
 
     ngOnInit (): void { 
-
+        
     }
 
     public getApplicantList (applicantData?: IGetRequestOptionalApplicantData): void {
