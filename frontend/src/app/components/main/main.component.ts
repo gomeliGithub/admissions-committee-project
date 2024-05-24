@@ -425,19 +425,13 @@ export class MainComponent implements OnInit {
     public updateExamFormSubmit (): void {
         const updateExamFormData = this.updateExamForm.value;
 
-
-
-        console.log(updateExamFormData);
-
-
-
-        /* this._mainService.updateExam({
+        this._mainService.updateExam({
             id: this.currentExamDataIndex,
             isConsultation: updateExamFormData.isConsultation as boolean,
-            conductingDate: updateExamFormData.conductingDate as Date,
+            conductingDate: new Date(updateExamFormData.conductingDate as string),
             classroom: updateExamFormData.classroom as string,
             studyGroupId: this.studyGroupList.find(studyGroupData => studyGroupData.title === updateExamFormData.studyGroup as string)?.id as number
-        }); */
+        });
     }
 
     public getSpecialtyData (): void {
