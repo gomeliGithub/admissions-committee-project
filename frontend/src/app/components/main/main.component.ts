@@ -10,8 +10,8 @@ import { PipesModule } from '../../modules/pipes/pipes.module';
 import { AppService } from '../../app.service';
 import { MainService } from '../../services/main/main.service';
 
-import { IActiveClientData, ICreateRequestApplicantData, IGetRequestApplicantData, IGetRequestOptionalApplicantData, IUpdateApplicantFormDefaultData, IUpdateRequestApplicantData } from 'types/global';
-import { IApplicant, IDepartment, IFaculty, IStudyGroup } from 'types/models';
+import { IActiveClientData, ICreateRequestApplicantData, IGetRequestApplicantData, IGetRequestExamData, IGetRequestOptionalApplicantData, IUpdateApplicantFormDefaultData, IUpdateRequestApplicantData } from 'types/global';
+import { IApplicant, IDepartment, IExam, IFaculty, ISpecialty, IStudyGroup } from 'types/models';
 
 @Component({
     selector: 'app-main',
@@ -27,6 +27,12 @@ export class MainComponent implements OnInit {
     public facultyList: IFaculty[] = [];
     public departmentList: IDepartment[] = [];
     public studyGroupList: IStudyGroup[] = [];
+    public examDataList: IExam[] = [];
+    public specialtyDataList: ISpecialty[] = [];
+
+    public nextApplicantsIsExists: boolean = false;
+
+    public commonPassingScore: number = 0;
 
     public applicantSearchForm: FormGroup<{
         faculty: FormControl<string | null>;
@@ -57,11 +63,21 @@ export class MainComponent implements OnInit {
         }>>
     }>;
 
+    public updateExamForm: FormGroup<{
+        isConsultation: FormControl<boolean | null>;
+        conductingDate: FormControl<string | null>;
+        classroom: FormControl<string | null>;
+        studyGroup: FormControl<string | null>;
+    }>;
+
     public createApplicantFormAccordionIsCollapsed: boolean = true;
 
     public updateApplicantFormSubmitBtnIsHidden: boolean = true;
     public updateApplicantFormDefaultData: IUpdateApplicantFormDefaultData[] = [];
     public updateApplicantFormData: IUpdateRequestApplicantData[] = [];
+
+    public currentExamDataIndex: number;
+    public updateExamFormSubmitIsHidden: boolean = true;
 
     constructor (
         private readonly _appService: AppService,
@@ -85,6 +101,10 @@ export class MainComponent implements OnInit {
             next: data => this.studyGroupList = data,
             error: () => this._appService.createAndAddErrorAlert()
         });
+
+        this.getExamData();
+
+        this.getSpecialtyData();
 
         const applicantSearchFormControls: {
             faculty: FormControl<string | null>;
@@ -110,7 +130,7 @@ export class MainComponent implements OnInit {
             'department': new FormControl(null, Validators.required),
             'studyGroup': new FormControl(null, Validators.required),
             'medal': new FormControl(null)
-        }
+        };
 
         const updateApplicantFormArray: FormArray<FormGroup<{
             fields: FormGroup<{
@@ -136,9 +156,22 @@ export class MainComponent implements OnInit {
             })
         ]);
 
+        const updateExamControls : {
+            isConsultation: FormControl<boolean | null>;
+            conductingDate: FormControl<string | null>;
+            classroom: FormControl<string | null>;
+            studyGroup: FormControl<string | null>;
+        } = {
+            'isConsultation': new FormControl(null),
+            'conductingDate': new FormControl(null),
+            'classroom': new FormControl(null),
+            'studyGroup': new FormControl(null),
+        };
+
         this.applicantSearchForm = new FormGroup(applicantSearchFormControls);
         this.createApplicantForm = new FormGroup(createApplicantFormControls);
         this.updateApplicantForm = new FormGroup({ 'applicants': updateApplicantFormArray });
+        this.updateExamForm = new FormGroup(updateExamControls);
     }
 
     ngOnInit (): void { 
@@ -162,6 +195,8 @@ export class MainComponent implements OnInit {
 
         this._mainService.getApplicantList(applicantGetData).subscribe({
             next: data => {
+                this.nextApplicantsIsExists = data.nextApplicantsIsExists;
+
                 if ( !data.nextApplicantsIsExists ) {
                     this.applicantList = data.applicantList;
 
@@ -197,7 +232,7 @@ export class MainComponent implements OnInit {
             error: () => this._appService.createAndAddErrorAlert()
         });
     }
-
+    
     private _setUpdateApplicantFormControlsData () {
         this.applicantList.forEach(( data, index ) => { 
             const group: FormGroup<{
@@ -350,5 +385,68 @@ export class MainComponent implements OnInit {
         });
 
         this.updateApplicantFormSubmitBtnIsHidden = this.updateApplicantFormData.length ? false : true;
+    }
+
+    public getExamData (examData?: IGetRequestExamData): void {
+        this._mainService.getExamData(examData).subscribe({
+            next: data => this.examDataList = data,
+            error: () => this._appService.createAndAddErrorAlert()
+        });
+    }
+
+    public inputExamChange (examDataIdStr: string): void {
+        const examDataId: number = parseInt(examDataIdStr, 10);
+
+        if ( !isNaN(examDataId) ) {
+            const currentExamData: IExam = this.examDataList.find(data => data.id === examDataId) as IExam;
+
+            this.updateExamFormSubmitIsHidden = false;
+
+            this.currentExamDataIndex = examDataId;
+
+            const conductingDate: Date = new Date(currentExamData.conductingDate);
+
+            const conductingDateMonth: number = conductingDate.getMonth();
+            const conductingDateMonthDay: number = conductingDate.getDate();
+
+            let conductingDateParsed: string = `${ conductingDate.getFullYear() }-${ conductingDateMonth < 10 ? '0' + conductingDateMonth : conductingDateMonth }-${ conductingDateMonthDay < 10 ? '0' + conductingDateMonthDay : conductingDateMonthDay }`;
+
+            this.updateExamForm.controls.isConsultation.setValue(currentExamData.isConsultation);
+            this.updateExamForm.controls.conductingDate.setValue(conductingDateParsed);
+            this.updateExamForm.controls.classroom.setValue(currentExamData.classroom);
+            this.updateExamForm.controls.studyGroup.setValue(this.studyGroupList.at(currentExamData.study_groupId)?.title as string);
+        } else {
+            this.updateExamForm.reset();
+
+            this.updateExamFormSubmitIsHidden = true;
+        }
+    }
+
+    public updateExamFormSubmit (): void {
+        const updateExamFormData = this.updateExamForm.value;
+
+
+
+        console.log(updateExamFormData);
+
+
+
+        /* this._mainService.updateExam({
+            id: this.currentExamDataIndex,
+            isConsultation: updateExamFormData.isConsultation as boolean,
+            conductingDate: updateExamFormData.conductingDate as Date,
+            classroom: updateExamFormData.classroom as string,
+            studyGroupId: this.studyGroupList.find(studyGroupData => studyGroupData.title === updateExamFormData.studyGroup as string)?.id as number
+        }); */
+    }
+
+    public getSpecialtyData (): void {
+        this._mainService.getSpecialtyData().subscribe({
+            next: data => {
+                this.specialtyDataList = data.specialtyList;
+                this.commonPassingScore = data.commonPassingScore;
+            },
+            error: () => this._appService.createAndAddErrorAlert()
+        });
     }
 }

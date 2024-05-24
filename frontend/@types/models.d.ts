@@ -49,7 +49,8 @@ export interface IExam {
     conductingDate: Date;
     classroom: string;
     createDate: Date;
-    studyGroup: IStudyGroup;
+    study_group: IStudyGroup;
+    study_groupId: number;
 }
 
 export interface IStudySubject {
@@ -63,6 +64,7 @@ export interface ISpecialty {
     id: number;
     passingScore: number;
     competition: number;
+    title: string;
     faculty: IFaculty;
     department: IDepartment;
 }

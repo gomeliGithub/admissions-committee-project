@@ -5,8 +5,8 @@ import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
-import { ICreateRequestApplicantData, IGetRequestApplicantData, IGetResponseApplicantData, IUpdateRequestApplicantData } from 'types/global';
-import { IDepartment, IFaculty, IStudyGroup } from 'types/models';
+import { ICreateRequestApplicantData, IGetRequestApplicantData, IGetRequestExamData, IGetResponseApplicantData, IGetResponseSpecialtyData, IUpdateRequestApplicantData, IUpdateRequestExamData } from 'types/global';
+import { IDepartment, IExam, IFaculty, ISpecialty, IStudyGroup } from 'types/models';
 
 @Injectable({
     providedIn: 'root'
@@ -28,13 +28,13 @@ export class MainService {
 
         if ( applicantData.ids ) params = params.append('ids', JSON.stringify(applicantData.ids))
         if ( applicantData.graduatedInstitutions ) params = params.append('graduatedInstitutions', JSON.stringify(applicantData.graduatedInstitutions))
-        if ( applicantData.enrolled ) params = params.append('enrolled', applicantData.enrolled)
+        if ( applicantData.hasOwnProperty('enrolled') ) params = params.append('enrolled', applicantData.enrolled as boolean)
         if ( applicantData.facultyId ) params = params.append('facultyId', applicantData.facultyId)
         if ( applicantData.departmentId ) params = params.append('departmentId', applicantData.departmentId)
         if ( applicantData.studyGroupId ) params = params.append('studyGroupId', applicantData.studyGroupId)
-        if ( applicantData.includeFacultyData ) params = params.append('includeFacultyData', applicantData.includeFacultyData)
-        if ( applicantData.includeDepartmentData ) params = params.append('includeDepartmentData', applicantData.includeDepartmentData)
-        if ( applicantData.includeStudyGroupData ) params = params.append('includeStudyGroupData', applicantData.includeStudyGroupData)
+        if ( applicantData.hasOwnProperty('includeFacultyData') ) params = params.append('includeFacultyData', applicantData.includeFacultyData as boolean)
+        if ( applicantData.hasOwnProperty('includeDepartmentData') ) params = params.append('includeDepartmentData', applicantData.includeDepartmentData as boolean)
+        if ( applicantData.hasOwnProperty('includeStudyGroupData') ) params = params.append('includeStudyGroupData', applicantData.includeStudyGroupData as boolean)
         
         return this._http.get<IGetResponseApplicantData>(`${ this._apiURL }/applicant/getApplicantData`, { withCredentials: true, params });
     }
@@ -57,5 +57,22 @@ export class MainService {
 
     public updateApplicant (applicantData: IUpdateRequestApplicantData): Observable<void> {
         return this._http.put<void>(`${ this._apiURL }/applicant/updateApplicant`, applicantData, { withCredentials: true });
+    }
+
+    public getExamData (examData?: IGetRequestExamData): Observable<IExam[]> {
+        let params: HttpParams = new HttpParams();
+
+        if ( examData && examData.studyGroupId ) params = params.append('studySubjectId', examData.studyGroupId);
+        if ( examData && examData.hasOwnProperty('isConsultation') ) params = params.append('isConsultation', examData.isConsultation as boolean);
+
+        return this._http.get<IExam[]>(`${ this._apiURL }/study/getExamData`, { withCredentials: true, params });
+    }
+
+    public getSpecialtyData (): Observable<IGetResponseSpecialtyData> {
+        return this._http.get<IGetResponseSpecialtyData>(`${ this._apiURL }/study/getSpecialtyData`, { withCredentials: true });
+    }
+
+    public updateExam (examData: IUpdateRequestExamData): Observable<void> {
+        return this._http.put<void>(`${ this._apiURL }/study/updateExam`, examData, { withCredentials: true });
     }
 }

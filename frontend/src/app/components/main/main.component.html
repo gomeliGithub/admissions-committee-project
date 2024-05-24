@@ -122,6 +122,11 @@
                 </div>
             </form>
         </div>
+        <div class="text-center">
+            <button type="button" class="btn btn-info btn-sm" [hidden]="!nextApplicantsIsExists" (click)="getApplicantList()">
+                Ещё абитуриенты
+            </button>
+        </div>
     </ng-template>
     <ng-template #applicantListEmptyBlock>
         <div class="fs-3 fw-semibold text-center">
@@ -199,4 +204,82 @@
             </div>
         </div>
     </div>
+</div>
+<div class="w-100">
+    <div class="w-25 mx-auto">
+        <label for="input2Exam" class="col-sm-2 col-form-label">Экзамен</label>
+        <div class="col-sm-10">
+            <select class="form-select" id="input2Exam" #input2ExamValue (change)="inputExamChange(input2ExamValue.value)">
+                <option selected></option>
+                <option *ngFor="let examDataData of examDataList">
+                    {{ examDataData.id }}
+                </option>
+            </select>
+        </div>
+    </div>
+    <div>
+        <form [formGroup]="updateExamForm" novalidate (ngSubmit)="updateExamFormSubmit()">
+            <div class="form-check form-check-reverse form-switch row mb-3 text-start" [ngStyle]="{ 'paddingRight': '3.2em' }">
+                <label for="inputIsConsultation" class="col-sm-10 form-check-label">Консультация</label>
+                <input type="checkbox" role="switch" class="col-sm-2 form-check-input" id="inputIsConsultation" formControlName="isConsultation">
+            </div>
+            <div class="row mb-3">
+                <label for="inputConductingDate" class="col-sm-2 col-form-label">Дата проведения</label>
+                <div class="col-sm-10">
+                    <input type="date" class="form-control" id="inputConductingDate" formControlName="conductingDate">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputClassroom" class="col-sm-2 col-form-label">Аудитория</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputClassroom" formControlName="classroom">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="input3StudyGroup" class="col-sm-2 col-form-label">Группа</label>
+                <div class="col-sm-10">
+                    <select class="form-select" id="input3StudyGroup" formControlName="studyGroup">
+                        <option selected></option>
+                        <option *ngFor="let studyGroupData of studyGroupList">
+                            {{ studyGroupData.title }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="my-3 text-center">
+                <button [disabled]="updateExamForm.invalid" [hidden]="updateExamFormSubmitIsHidden" class="btn btn-warning">
+                    Сохранить изменения
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table text-center">
+        <caption>
+            Проходной бал по всем специльностям - {{ commonPassingScore }}
+        </caption>
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Проходной балл</th>
+                <th scope="col">Конкурс</th>
+                <th scope="col">Название</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let specialtyData of specialtyDataList; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td> 
+                    {{ specialtyData.passingScore }} 
+                </td>
+                <td>
+                    {{ specialtyData.competition }}
+                </td>
+                <td>
+                    {{ specialtyData.title }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

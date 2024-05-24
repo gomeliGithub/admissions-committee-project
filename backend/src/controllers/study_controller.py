@@ -4,7 +4,8 @@ from fastapi import Depends
 
 from fastapi_controllers import (
     Controller,
-    get
+    get,
+    put
 )
 
 from ..auth.auth_bearer import JWTBearer
@@ -13,15 +14,14 @@ from prisma.models import (
     Exam,
     Faculty,
     Department,
-    Study_group,
-    Specialty
+    Study_group
 )
 
-from ..pydanticClasses.examData import (
+from ..pydanticClasses.studyData import (
     Department_get_request_pydantic,
-    Exam_create_request_pydantic, 
     Exam_get_request_pydantic,
-    Specialty_get_request_pydantic
+    Exam_update_request_pydantic,
+    Specialty_get_response_pydantic
 )
 
 from ..services.study_service import StudyService
@@ -34,12 +34,7 @@ class StudyController (Controller):
     def __init__ (self, studyService: StudyService = Depends(StudyService)) -> None:
         self.__studyService = studyService
 
-
-    @get('/getExamData', dependencies = [Depends(JWTBearer())], response_class = List[Exam])
-    async def getExamData (self, examData: Exam_get_request_pydantic):
-        return await self.__studyService.getExamData(examData)
     
-
     @get('/getFacultyData', dependencies = [Depends(JWTBearer())])
     async def getFacultyData (self) -> List[Faculty]:
         return await self.__studyService.getFacultyData()
@@ -51,15 +46,20 @@ class StudyController (Controller):
     
 
     @get('/getStudyGroupData', dependencies = [Depends(JWTBearer())])
-    async def getStudyGroupData (self) -> List[Study_group]:
+    async def getStudyGroupData (self) -> List[Study_group] :
         return await self.__studyService.getStudyGroupData()
-
-
-    @get('/getSpecialtyData', dependencies = [Depends(JWTBearer())], response_class = List[Specialty])
-    async def getSpecialtyData (self, specialtyData: Specialty_get_request_pydantic):
-        return await self.__studyService.getSpecialtyData(specialtyData)
     
 
-    @get('/createExam', dependencies = [Depends(JWTBearer())], response_class = None)
-    async def createExam (self, examData: Exam_create_request_pydantic) -> None:
-        return await self.__studyService.createExam(examData)
+    @get('/getExamData', dependencies = [Depends(JWTBearer())])
+    async def getExamData (self, examData: Exam_get_request_pydantic = Depends()) -> List[Exam]:
+        return await self.__studyService.getExamData(examData)
+
+
+    @get('/getSpecialtyData', dependencies = [Depends(JWTBearer())], response_model = Specialty_get_response_pydantic)
+    async def getSpecialtyData (self):
+        return await self.__studyService.getSpecialtyData()
+    
+
+    @put('/updateExam', dependencies = [Depends(JWTBearer())])
+    async def updateExam (self, examData: Exam_update_request_pydantic) -> None:
+        return await self.__studyService.updateExam(examData)

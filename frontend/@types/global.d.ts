@@ -1,4 +1,4 @@
-import { IApplicant } from 'types/models.d';
+import { IApplicant, ISpecialty } from 'types/models.d';
 
 export interface IActiveClientData {
     login: string;
@@ -64,4 +64,22 @@ export interface IUpdateApplicantFormDefaultData {
     faculty: string;
     department: string;
     studyGroup: string;
+}
+
+export interface IGetRequestExamData {
+    isConsultation?: boolean;
+    studyGroupId?: number;
+}
+
+export interface IGetResponseSpecialtyData {
+    specialtyList: ISpecialty[];
+    commonPassingScore: number;
+}
+
+export interface IUpdateRequestExamData {
+    id: number;
+    isConsultation?: boolean;
+    conductingDate?: Date;
+    classroom?: string;
+    studyGroupId?: number;
 }

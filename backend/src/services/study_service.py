@@ -13,32 +13,20 @@ from prisma.types import (
     DepartmentWhereInput,
     Study_groupWhereInput,
     SpecialtyWhereInput,
-    ExamCreateInput
+    ExamUpdateInput
 )
 from src.prisma import prisma
 
-from ..pydanticClasses.examData import (
+from ..pydanticClasses.studyData import (
     Department_get_request_pydantic,
-    Exam_create_request_pydantic, 
     Exam_get_request_pydantic,
-    Specialty_get_request_pydantic
+    Exam_update_request_pydantic
 )
 
 
 class StudyService:
     def __init__ (self):
         pass
-
-
-    async def getExamData (self, examData: Exam_get_request_pydantic):
-        whereParams: ExamWhereInput = { }
-
-        # if examData.studySubjectId != None: selectQuery = selectQuery.join(Study_subject, Study_subject.id == examData.studySubjectId)
-        if examData.isConsultation != None: whereParams['isConsultation'] = examData.isConsultation
-
-        examDataList: List[Exam] = await prisma.exam.find_many(where = whereParams)
-
-        return examDataList
     
 
     async def getFacultyData (self) -> List[Faculty]:
@@ -67,25 +55,40 @@ class StudyService:
         return studyGroupList
     
 
-    async def getSpecialtyData (self, specialtyData: Specialty_get_request_pydantic):
-        whereParams: SpecialtyWhereInput = { }
+    async def getExamData (self, examData: Exam_get_request_pydantic):
+        whereParams: ExamWhereInput = { }
 
-        if specialtyData.includePassingScore == True: whereParams['passingScore'] = True
-        if specialtyData.includeCompetition == True: whereParams['competition'] = True
-
-        specialtyDataList: List[Specialty] = await prisma.specialty.find_many(where = whereParams)
-
-        return specialtyDataList
-    
-
-    async def createExam (self, examData: Exam_create_request_pydantic) -> None:
-        whereParams: ExamCreateInput = {
-            'conductingDate': examData.conductingDate,
-            'classroom': examData.classroom
-        }
-
+        if examData.studyGroupId != None: whereParams['study_group'] = { 'is': { 'id': examData.studyGroupId }}
         if examData.isConsultation != None: whereParams['isConsultation'] = examData.isConsultation
 
-        if examData.studyGroupId != None: whereParams['study_group'] = { 'connect': { 'id': examData.studyGroupId } }
+        examDataList: List[Exam] = await prisma.exam.find_many(where = whereParams)
 
-        await prisma.exam.create(data = whereParams)
+        return examDataList
+    
+
+    async def getSpecialtyData (self):
+        specialtyDataList: List[Specialty] = await prisma.specialty.find_many()
+
+        commonPassingScore: int = 0
+
+        for data in specialtyDataList:
+            commonPassingScore += data.passingScore
+        
+        commonPassingScore = commonPassingScore // len(specialtyDataList)
+
+        return {
+            'specialtyList': specialtyDataList,
+            'commonPassingScore': commonPassingScore
+        }
+    
+
+    async def updateExam (self, examData: Exam_update_request_pydantic) -> None:
+        updateData: ExamUpdateInput = { }
+
+        if examData.isConsultation != None: updateData['isConsultation'] = examData.isConsultation
+        if examData.conductingDate != None: updateData['conductingDate'] = examData.conductingDate
+        if examData.classroom != None: updateData['classroom'] = examData.classroom
+
+        if examData.studyGroupId != None: updateData['study_group'] = { 'connect': { 'id': examData.studyGroupId } }
+
+        await prisma.exam.update(data = updateData, where = { 'id': examData.id })
