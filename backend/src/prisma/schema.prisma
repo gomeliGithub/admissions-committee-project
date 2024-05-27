@@ -17,19 +17,19 @@ model Applicant {
     enrolled                 Boolean                           @default(false)
     createDate               DateTime                          @default(now())
     updateDate               DateTime?
-    study_group              Study_group?
     examination_sheet        Examination_sheet?
-    department               Department                        @relation(fields: [departmentId], references: [id])
-    departmentId             Int
     faculty                  Faculty                           @relation(fields: [facultyId], references: [id])
     facultyId                Int
+    department               Department                        @relation(fields: [departmentId], references: [id])
+    departmentId             Int
+    study_group              Study_group                       @relation(fields: [study_groupId], references: [id])
+    study_groupId            Int                               
 }
 
 model Study_group {
     id                       Int                               @id @default(autoincrement())
     title                    String                            @unique
-    applicant                Applicant?                        @relation(fields: [applicantId], references: [id])
-    applicantId              Int?                              @unique
+    applicants               Applicant[]                       
     exams                    Exam[]
 }
 
@@ -45,8 +45,8 @@ model Examination_sheet {
     socialScience            Int                               @default(0)
     mathematics              Int                               @default(0)
     createDate               DateTime                          @default(now())
-    applicant                Applicant                         @relation(fields: [applicantId], references: [id])
-    applicantId              Int                               @unique
+    applicant                Applicant?                        @relation(fields: [applicantId], references: [id])
+    applicantId              Int?                              @unique
 }
 
 model Faculty {
@@ -61,7 +61,7 @@ model Faculty {
 model Department {
     id                       Int                               @id @default(autoincrement())
     title                    String                            @unique
-    placesNumber             Int                               @default(0)
+    placesNumber             Int                               
     passingScore             Int                               @default(0)
     studentsAreShortage      Boolean                           @default(false)
     applicants               Applicant[]                    
