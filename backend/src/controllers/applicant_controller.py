@@ -40,3 +40,13 @@ class ApplicantController (Controller):
     @put('/updateApplicant', dependencies = [Depends(JWTBearer())])
     async def updateApplicant (self, applicantData: Applicant_update_request_pydantic) -> None:
         return await self.__applicantService.updateApplicant(applicantData)
+    
+
+    @put('/fillRandomApplicantExamData', dependencies = [Depends(JWTBearer())])
+    async def fillRandomExamData (self) -> None:
+        return await self.__applicantService.fillRandomApplicantExamData()
+    
+
+    @put('/createEnrolledApplicantList', dependencies = [Depends(JWTBearer())])
+    async def createEnrolledApplicantList (self) -> None:
+        return await self.__applicantService.createEnrolledApplicantList()
