@@ -49,6 +49,15 @@ model Examination_sheet {
     applicantId              Int                               @unique
 }
 
+model Faculty {
+    id                       Int                               @id @default(autoincrement())
+    title                    String                            @unique
+    passingScore             Int                               @default(0)
+    applicants               Applicant[]   
+    departments              Department[]
+    specialties              Specialty[]       
+}
+
 model Department {
     id                       Int                               @id @default(autoincrement())
     title                    String                            @unique
@@ -58,15 +67,6 @@ model Department {
     applicants               Applicant[]                    
     faculty                  Faculty                           @relation(fields: [facultyId], references: [id])
     facultyId                Int
-}
-
-model Faculty {
-    id                       Int                               @id @default(autoincrement())
-    title                    String                            @unique
-    passingScore             Int                               @default(0)
-    applicants               Applicant[]   
-    departments              Department[]
-    specialties              Specialty[]       
 }
 
 model Exam {

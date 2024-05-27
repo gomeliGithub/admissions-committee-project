@@ -1,18 +1,14 @@
 from typing import List
 
-import time
 from datetime import (
-    datetime, 
-    timedelta,
-    timezone
+    datetime
 )
 
 from fastapi import Query
 
 from pydantic import (
     BaseModel, 
-    Field,
-    field_validator
+    Field
 )
 
 from prisma.models import Specialty

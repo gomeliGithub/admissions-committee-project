@@ -5,8 +5,6 @@ from typing import (
 )
 
 import json
-import time
-from datetime import datetime
 
 from prisma import Json
 from prisma.models import Applicant

@@ -5,7 +5,12 @@ from typing import (
     Set,
     cast
 )
-from datetime import datetime, timedelta
+import time
+from datetime import (
+    datetime, 
+    timedelta, 
+    timezone
+)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -108,7 +113,7 @@ async def createStudyData () -> None:
                 }
             })
 
-    datetimeNow: datetime = datetime.now()
+    datetimeNow: datetime = datetime.fromtimestamp(time.time(), timezone.utc)
     index: int = 0
 
     commonExamCount: int = await prisma.exam.count()
