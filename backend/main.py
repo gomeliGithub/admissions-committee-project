@@ -12,19 +12,25 @@ from datetime import (
     timezone
 )
 
+import random
+import json
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from contextlib import asynccontextmanager
 
+from prisma import Json
 from src.prisma import prisma
 from prisma.types import (
+    ApplicantCreateInput,
     DepartmentCreateWithoutRelationsInput,
     SpecialtyCreateWithoutRelationsInput,
     ExamWhereUniqueInput
 )
 from prisma.models import (
     Admissions_committee_secretary,
+    Department,
     Faculty,
     Study_group
 )
@@ -42,7 +48,7 @@ os.environ['DATABASE_URL'] = settings['DATABASE_URL']
 
 FACULTIES_AND_DEPARTMENTS_TITLE_DICT: Dict[ str, Dict[ str, Set[str]  | Dict[ str, set[str] ] ] ] = settings['FACULTIES_AND_DEPARTMENTS_TITLE_DICT']
 STUDY_SUBJECT_SET: Set[str] = settings['STUDY_SUBJECT_SET']
-STUDY_GROUPS_TITLE_SET: Set[str] = settings['STUDY_GROUPS_TITLE_SET']
+STUDY_GROUPS_DATA_DICT: List[ Dict[ str, str | List[ str | Dict[ str, str | List[str] | bool ] ] ] ] = settings['STUDY_GROUPS_DATA_DICT']
 
 
 @asynccontextmanager
@@ -98,7 +104,9 @@ async def createStudyData () -> None:
             currentSpecialtiesTitleList: List[SpecialtyCreateWithoutRelationsInput] = []
             
             for departmentTitle in currentFacultyRelationDict['departmentsTitle']:
-                currentDepartmentsTitleList.append({ 'title': departmentTitle })
+                currentRandomPlacesNumber: int = random.randint(15, 20)
+
+                currentDepartmentsTitleList.append({ 'title': departmentTitle, 'placesNumber': currentRandomPlacesNumber })
             
             for specialtyTitle in currentFacultyRelationDict['specialtiesTitle']:
                 currentSpecialtiesTitleList.append({ 'title': specialtyTitle })
@@ -129,8 +137,8 @@ async def createStudyData () -> None:
 
     index = 1
 
-    for studyGroupTitle in STUDY_GROUPS_TITLE_SET:
-        existingStudyGroupData: Study_group | None = await prisma.study_group.find_unique(where = { 'title': studyGroupTitle })
+    for studyGroupData in STUDY_GROUPS_DATA_DICT:
+        existingStudyGroupData: Study_group | None = await prisma.study_group.find_unique(where = { 'title': cast(str, studyGroupData['title']) })
 
         if existingStudyGroupData == None:
             currentExamIdsList: List[ExamWhereUniqueInput] = []
@@ -140,7 +148,27 @@ async def createStudyData () -> None:
 
                 index += 1
 
-            await prisma.study_group.create(data = {
-                'title': studyGroupTitle,
+            createdStudyGroup: Study_group = await prisma.study_group.create(data = {
+                'title': cast(str, studyGroupData['title']),
                 'exams': { 'connect': currentExamIdsList }
             })
+
+            for applicantData in studyGroupData['applicants']:
+                currentFacultyData: Faculty = cast(Faculty, await prisma.faculty.find_unique(where = { 'title': cast(str, cast(Dict[str, str | List[str]], applicantData)['facultyTitle']) }))
+                currentDepartmentData: Department = cast(Department, await prisma.department.find_unique(where = { 'title': cast(str, cast(Dict[str, str | List[str]], applicantData)['departmentTitle']) }))
+
+                applicantCreateData: ApplicantCreateInput = {
+                    'fullName': cast(str, cast(Dict[str, str | List[str]], applicantData)['fullName']),
+                    'graduatedInstitutions': cast(Json, json.dumps(cast(List[str], cast(Dict[str, str | List[str]], applicantData)['graduatedInstitutions']))),
+                    'examination_sheet': {
+                        'create': { }
+                    },
+                    'faculty': { 'connect': { 'id': currentFacultyData.id }},
+                    'department': { 'connect': { 'id': currentDepartmentData.id } },
+                    'study_group': { 'connect': { 'id': createdStudyGroup.id } }
+                }
+
+                if cast(Dict[str, str | List[str]], applicantData).get('medal') != None:
+                    applicantCreateData['medal'] = cast(bool, cast(Dict[str, str | List[str]], applicantData)['medal'])
+
+                await prisma.applicant.create(data = applicantCreateData)
