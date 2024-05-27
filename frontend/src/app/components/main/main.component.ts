@@ -449,4 +449,18 @@ export class MainComponent implements OnInit {
             error: () => this._appService.createAndAddErrorAlert()
         });
     }
+
+    public fillRandomExamDataClick (): void {
+        this._mainService.fillRandomExamData().subscribe({
+            next: () => this._appService.createAndAddSuccessAlert("Успешно завершено"),
+            error: () => this._appService.createAndAddErrorAlert()
+        });
+    }
+
+    public createEnrolledApplicantListClick (): void {
+        this._mainService.createEnrolledApplicantList().subscribe({
+            next: () => this._appService.createAndAddSuccessAlert("Списки успешно сформированны"),
+            error: () => this._appService.createAndAddErrorAlert()
+        });
+    }
 }

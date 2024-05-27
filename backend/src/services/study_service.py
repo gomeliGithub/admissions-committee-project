@@ -12,7 +12,6 @@ from prisma.types import (
     FacultyWhereInput,
     DepartmentWhereInput,
     Study_groupWhereInput,
-    SpecialtyWhereInput,
     ExamUpdateInput
 )
 from src.prisma import prisma
@@ -89,6 +88,6 @@ class StudyService:
         if examData.conductingDate != None: updateData['conductingDate'] = examData.conductingDate
         if examData.classroom != None: updateData['classroom'] = examData.classroom
 
-        if examData.studyGroupId != None: updateData['study_group'] = { 'connect': { 'id': examData.studyGroupId } }
+        if examData.studyGroupId != None: updateData['study_group'] = { 'connect': { 'id': examData.studyGroupId }}
 
         await prisma.exam.update(data = updateData, where = { 'id': examData.id })

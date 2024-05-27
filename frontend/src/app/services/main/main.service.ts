@@ -81,4 +81,12 @@ export class MainService {
 
         return sorted;
     }
+
+    public fillRandomExamData (): Observable<void> {
+        return this._http.put<void>(`${ this._apiURL }/applicant/fillRandomApplicantExamData`, { }, { withCredentials: true });
+    }
+
+    public createEnrolledApplicantList (): Observable<void> {
+        return this._http.put<void>(`${ this._apiURL }/applicant/createEnrolledApplicantList`, { }, { withCredentials: true });
+    }
 }

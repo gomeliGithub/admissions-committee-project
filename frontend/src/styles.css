@@ -1,4 +1,4 @@
-app-main {
+app-sign, app-main {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
