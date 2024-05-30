@@ -201,9 +201,7 @@ export class MainComponent implements OnInit {
 
         this._mainService.getApplicantList(applicantGetData).subscribe({
             next: data => {
-                this.nextApplicantsIsExists = data.nextApplicantsIsExists;
-
-                if ( !data.nextApplicantsIsExists ) {
+                if ( !this.nextApplicantsIsExists ) {
                     this.applicantList = data.applicantList;
 
                     this._setUpdateApplicantFormControlsData();
@@ -233,6 +231,8 @@ export class MainComponent implements OnInit {
                             'studyGroup': data['study_group'].title
                         });
                     });
+
+                    this.nextApplicantsIsExists = data.nextApplicantsIsExists;
                 }
             },
             error: () => this._appService.createAndAddErrorAlert()
