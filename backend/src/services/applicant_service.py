@@ -172,7 +172,7 @@ class ApplicantService:
 
             applicantExamsScoreWithMedalList: List[ Tuple[ int, int, bool ] ] = [ data for data in filter(lambda data: data[2] == True, currentSummaryApplicantExamsScoreList) ]
 
-            if len(applicantExamsScoreWithMedalList) != 0: suitableApplicantIds.append(*map(lambda data: data[0], applicantExamsScoreWithMedalList))
+            if len(applicantExamsScoreWithMedalList) != 0: suitableApplicantIds.extend(map(lambda data: data[0], applicantExamsScoreWithMedalList))
 
             for applicantExamsScoreData in currentSummaryApplicantExamsScoreList:
                 if len(suitableApplicantIds) != currentDepartmentPlacesNumber: suitableApplicantIds.append(applicantExamsScoreData[0])
